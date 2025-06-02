@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Dashboard - UniEvent</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="../css/styles.css" rel="stylesheet">
+  <link href="../css/dashboard.css" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="sidebar-brand">
+          <i class="bi bi-calendar-event-fill me-2"></i>
+          <span>UniEvent</span>
+        </a>
+        <button class="btn btn-link d-lg-none sidebar-close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="sidebar-user">
+        <div class="user-avatar">
+          <img src="https://images.pexels.com/photos/3771089/pexels-photo-3771089.jpeg" alt="Finance Team Avatar">
+        </div>
+        <div class="user-info">
+          <h6 class="user-name">Sarah Johnson</h6>
+          <span class="user-role">Finance Team</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="finance-dashboard.html">
+              <i class="bi bi-speedometer2"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="finance-payments.html">
+              <i class="bi bi-credit-card"></i>
+              <span>Payment Verification</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="finance-transactions.html">
+              <i class="bi bi-journal-text"></i>
+              <span>Transaction History</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="finance-reports.html">
+              <i class="bi bi-bar-chart"></i>
+              <span>Financial Reports</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="finance-settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <a href="../index.html" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-left"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <!-- Top Navbar -->
+      <nav class="navbar navbar-expand navbar-light bg-white topbar">
+        <button class="btn btn-link d-lg-none" id="sidebarToggle">
+          <i class="bi bi-list"></i>
+        </button>
+        
+        <div class="navbar-nav ms-auto">
+          <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="badge bg-danger">4</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationsDropdown">
+              <h6 class="dropdown-header">Notifications</h6>
+              <a class="dropdown-item d-flex align-items-center" href="#">
+                <div class="me-3">
+                  <div class="notification-icon bg-primary">
+                    <i class="bi bi-credit-card text-white"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="small text-gray-500">June 12, 2025</div>
+                  <span>New payment verification request for "AI Conference"</span>
+                </div>
+              </a>
+              <a class="dropdown-item d-flex align-items-center" href="#">
+                <div class="me-3">
+                  <div class="notification-icon bg-success">
+                    <i class="bi bi-check-circle text-white"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="small text-gray-500">June 10, 2025</div>
+                  <span>Monthly financial report generated</span>
+                </div>
+              </a>
+              <a class="dropdown-item d-flex align-items-center" href="#">
+                <div class="me-3">
+                  <div class="notification-icon bg-warning">
+                    <i class="bi bi-exclamation-triangle text-white"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="small text-gray-500">June 8, 2025</div>
+                  <span>Pending payment verifications require attention</span>
+                </div>
+              </a>
+              <a class="dropdown-item text-center small text-gray-500" href="#">Show All Notifications</a>
+            </div>
+          </div>
+          
+          <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="d-none d-lg-inline text-gray-600 me-2">Sarah Johnson</span>
+              <img class="rounded-circle" src="https://images.pexels.com/photos/3771089/pexels-photo-3771089.jpeg" alt="Finance Team Avatar" width="32" height="32">
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <a class="dropdown-item" href="finance-profile.html">
+                <i class="bi bi-person me-2 text-gray-400"></i>
+                Profile
+              </a>
+              <a class="dropdown-item" href="finance-settings.html">
+                <i class="bi bi-gear me-2 text-gray-400"></i>
+                Settings
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="../index.html">
+                <i class="bi bi-box-arrow-right me-2 text-gray-400"></i>
+                Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Dashboard Content -->
+      <div class="container-fluid px-4 py-4">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h2 class="dashboard-title">Finance Dashboard</h2>
+            <p class="text-muted">Monitor and manage event payments and financial transactions</p>
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body d-flex flex-wrap gap-2">
+                <a href="finance-payments.html" class="btn btn-primary">
+                  <i class="bi bi-credit-card me-2"></i> Verify Payments
+                </a>
+                <a href="finance-transactions.html" class="btn btn-success">
+                  <i class="bi bi-journal-text me-2"></i> View Transactions
+                </a>
+                <a href="finance-reports.html" class="btn btn-info text-white">
+                  <i class="bi bi-file-earmark-text me-2"></i> Generate Report
+                </a>
+                <a href="finance-settings.html" class="btn btn-secondary">
+                  <i class="bi bi-gear me-2"></i> Payment Settings
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="dashboard-card-title">Total Revenue</div>
+                  <div class="dashboard-card-icon bg-primary-light">
+                    <i class="bi bi-cash-stack text-primary"></i>
+                  </div>
+                </div>
+                <div class="dashboard-card-value">$12,450</div>
+                <div class="dashboard-card-progress">
+                  <div class="progress">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="small mt-1">+15% from last month</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="dashboard-card-title">Pending Payments</div>
+                  <div class="dashboard-card-icon bg-warning-light">
+                    <i class="bi bi-clock-history text-warning"></i>
+                  </div>
+                </div>
+                <div class="dashboard-card-value">23</div>
+                <div class="dashboard-card-progress">
+                  <div class="progress">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="small mt-1">Requires verification</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="dashboard-card-title">Verified Payments</div>
+                  <div class="dashboard-card-icon bg-success-light">
+                    <i class="bi bi-check-circle text-success"></i>
+                  </div>
+                </div>
+                <div class="dashboard-card-value">156</div>
+                <div class="dashboard-card-progress">
+                  <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="small mt-1">This month</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="dashboard-card-title">Refunds</div>
+                  <div class="dashboard-card-icon bg-danger-light">
+                    <i class="bi bi-arrow-return-left text-danger"></i>
+                  </div>
+                </div>
+                <div class="dashboard-card-value">3</div>
+                <div class="dashboard-card-progress">
+                  <div class="progress">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="small mt-1">Processing required</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Payments and Revenue Chart -->
+        <div class="row g-4">
+          <!-- Recent Payments -->
+          <div class="col-lg-8">
+            <div class="card h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Payments</h5>
+                <a href="finance-payments.html" class="btn btn-sm btn-primary">View All</a>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Event</th>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>AI Conference</td>
+                        <td>John Doe</td>
+                        <td>$25.00</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        <td>June 12, 2025</td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-primary">Verify</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Leadership Workshop</td>
+                        <td>Emma Wilson</td>
+                        <td>$15.00</td>
+                        <td><span class="badge bg-success">Verified</span></td>
+                        <td>June 11, 2025</td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-secondary">Details</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Research Symposium</td>
+                        <td>Michael Chen</td>
+                        <td>$5.00</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        <td>June 10, 2025</td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-primary">Verify</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Startup Competition</td>
+                        <td>Sarah Brown</td>
+                        <td>$10.00</td>
+                        <td><span class="badge bg-danger">Refund</span></td>
+                
+                        <td>June 9, 2025</td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-danger">Process</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Web Development</td>
+                        <td>David Lee</td>
+                        <td>$20.00</td>
+                        <td><span class="badge bg-success">Verified</span></td>
+                        <td>June 8, 2025</td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-secondary">Details</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Revenue Summary -->
+          <div class="col-lg-4">
+            <div class="card h-100">
+              <div class="card-header">
+                <h5 class="card-title mb-0">Revenue Summary</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-4">
+                  <h6 class="fw-bold mb-3">Revenue by Event Type</h6>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Conferences</span>
+                      <span>$5,250</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                      <div class="progress-bar bg-primary" role="progressbar" style="width: 42%" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Workshops</span>
+                      <span>$3,750</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Seminars</span>
+                      <span>$2,250</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                      <div class="progress-bar bg-info" role="progressbar" style="width: 18%" aria-valuenow="18" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Competitions</span>
+                      <span>$1,200</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-4">
+                  <h6 class="fw-bold mb-3">Payment Methods</h6>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Credit Card</span>
+                    <span>65%</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Bank Transfer</span>
+                    <span>25%</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Digital Wallet</span>
+                    <span>10%</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4">
+                  <h6 class="fw-bold mb-3">Monthly Comparison</h6>
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-arrow-up-circle-fill text-success me-2"></i>
+                    <div>
+                      <div class="fw-bold">15% Increase</div>
+                      <div class="small text-muted">Compared to last month</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/scripts.js"></script>
+  <script>
+    // Toggle sidebar on mobile
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('show');
+    });
+    
+    // Close sidebar when clicking the close button
+    document.querySelector('.sidebar-close').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.remove('show');
+    });
+  </script>
+</body>
+</html>
