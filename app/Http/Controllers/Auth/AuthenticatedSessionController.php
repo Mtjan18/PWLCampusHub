@@ -36,9 +36,9 @@ class AuthenticatedSessionController extends Controller
             } elseif ($user->role->name === 'member') {
                 return redirect()->route('member.dashboard');
             } elseif ($user->role->name === 'panitia') {
-                return redirect()->route('member.dashboard');
+                return redirect()->route('panitia.dashboard');
             } elseif ($user->role->name === 'tim_keuangan') {
-                return redirect()->route('member.dashboard');
+                return redirect()->route('tim_keuangan.dashboard');
             } else {
                 return redirect()->intended('/');
             }

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events - UniEvent</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <style>
+    /* Additional Styles for Events Page */
+    .event-filter {
+      background-color: var(--gray-100);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .form-select, .form-control {
+      border-radius: var(--border-radius-sm);
+    }
+    
+    .page-title {
+      color: var(--primary);
+      position: relative;
+      display: inline-block;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .page-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background-color: var(--secondary);
+    }
+    
+    .event-status {
+      position: absolute;
+      top: var(--spacing-md);
+      left: var(--spacing-md);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--border-radius-sm);
+      z-index: 2;
+    }
+    
+    .status-open {
+      background-color: var(--success);
+      color: white;
+    }
+    
+    .status-full {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .status-upcoming {
+      background-color: var(--warning);
+      color: var(--dark);
+    }
+    
+    .event-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    
+    .event-meta-item {
+      display: flex;
+      align-items: center;
+      color: var(--gray-700);
+    }
+    
+    .event-meta-item i {
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <i class="bi bi-calendar-event-fill me-2"></i>
+        <span>UniEvent</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="events.html">Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html">About</a>
+          </li>
+        </ul>
+        <div class="d-flex">
+          <a href="login.html" class="btn btn-outline-light me-2">Login</a>
+          <a href="register.html" class="btn btn-primary">Register</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Events Header -->
+  <section class="page-header bg-light py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1 class="page-title fw-bold">University Events</h1>
+          <p class="lead text-muted">Browse and register for upcoming events at the university</p>
+        </div>
+        <div class="col-md-6 d-flex justify-content-md-end mt-3 mt-md-0">
+          <div class="search-bar">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search events...">
+              <button class="btn btn-primary" type="button">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events Content -->
+  <section class="events-section py-5">
+    <div class="container">
+      <!-- Filters -->
+      <div class="event-filter">
+        <div class="row">
+          <div class="col-md-3 mb-3 mb-md-0">
+            <label for="categoryFilter" class="form-label">Category</label>
+            <select id="categoryFilter" class="form-select">
+              <option value="">All Categories</option>
+              <option value="technology">Technology</option>
+              <option value="business">Business</option>
+              <option value="science">Science</option>
+              <option value="arts">Arts</option>
+              <option value="workshop">Workshop</option>
+              <option value="seminar">Seminar</option>
+            </select>
+          </div>
+          <div class="col-md-3 mb-3 mb-md-0">
+            <label for="dateFilter" class="form-label">Date</label>
+            <select id="dateFilter" class="form-select">
+              <option value="">All Dates</option>
+              <option value="today">Today</option>
+              <option value="tomorrow">Tomorrow</option>
+              <option value="this-week">This Week</option>
+              <option value="this-month">This Month</option>
+              <option value="next-month">Next Month</option>
+            </select>
+          </div>
+          <div class="col-md-3 mb-3 mb-md-0">
+            <label for="statusFilter" class="form-label">Status</label>
+            <select id="statusFilter" class="form-select">
+              <option value="">All Status</option>
+              <option value="open">Registration Open</option>
+              <option value="full">Fully Booked</option>
+              <option value="upcoming">Upcoming</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-secondary me-2">
+              <i class="bi bi-x-circle me-1"></i> Clear Filters
+            </button>
+            <button type="button" class="btn btn-primary">
+              <i class="bi bi-funnel-fill me-1"></i> Apply Filters
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Events List -->
+      <div class="row g-4">
+        <!-- Event 1 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card event-card h-100">
+            <div class="event-image">
+              <span class="event-status status-open">Registration Open</span>
+              <img src="https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg" class="card-img-top" alt="AI Conference">
+              <span class="event-category">Technology</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">AI in Education Conference</h5>
+              <div class="event-meta">
+                <div class="event-meta-item">
+                  <i class="bi bi-calendar3"></i> June 15, 2025
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-clock"></i> 10:00 AM
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-geo-alt"></i> Main Auditorium
+                </div>
+              </div>
+              <p class="card-text">Explore the latest applications of artificial intelligence in modern education with industry experts and researchers.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="event-price">$25.00</span>
+                <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Event 2 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card event-card h-100">
+            <div class="event-image">
+              <span class="event-status status-full">Fully Booked</span>
+              <img src="https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg" class="card-img-top" alt="Leadership Workshop">
+              <span class="event-category">Workshop</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Leadership Development Workshop</h5>
+              <div class="event-meta">
+                <div class="event-meta-item">
+                  <i class="bi bi-calendar3"></i> July 10, 2025
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-clock"></i> 2:00 PM
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-geo-alt"></i> Business School
+                </div>
+              </div>
+              <p class="card-text">Develop essential leadership skills with industry experts and interactive sessions designed for future leaders.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="event-price">$15.00</span>
+                <a href="event-details.html" class="btn btn-outline-primary">Join Waitlist</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Event 3 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card event-card h-100">
+            <div class="event-image">
+              <span class="event-status status-upcoming">Upcoming</span>
+              <img src="https://images.pexels.com/photos/1708936/pexels-photo-1708936.jpeg" class="card-img-top" alt="Design Thinking">
+              <span class="event-category">Seminar</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Design Thinking in Research</h5>
+              <div class="event-meta">
+                <div class="event-meta-item">
+                  <i class="bi bi-calendar3"></i> August 5, 2025
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-clock"></i> 9:30 AM
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-geo-alt"></i> Innovation Hub
+                </div>
+              </div>
+              <p class="card-text">Learn how to apply design thinking methodology to enhance your research projects and improve outcomes.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="event-price">Free</span>
+                <a href="event-details.html" class="btn btn-outline-primary">Get Notified</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Event 4 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card event-card h-100">
+            <div class="event-image">
+              <span class="event-status status-open">Registration Open</span>
+              <img src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg" class="card-img-top" alt="Research Symposium">
+              <span class="event-category">Science</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Annual Research Symposium</h5>
+              <div class="event-meta">
+                <div class="event-meta-item">
+                  <i class="bi bi-calendar3"></i> September 12, 2025
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-clock"></i> 8:00 AM
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-geo-alt"></i> Science Complex
+                </div>
+              </div>
+              <p class="card-text">Showcase your research and connect with peers during our annual research symposium. Open to all departments.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="event-price">$5.00</span>
+                <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Event 5 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card event-card h-100">
+            <div class="event-image">
+              <span class="event-status status-open">Registration Open</span>
+              <img src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg" class="card-img-top" alt="Startup Competition">
+              <span class="event-category">Business</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Student Startup Competition</h5>
+              <div class="event-meta">
+                <div class="event-meta-item">
+                  <i class="bi bi-calendar3"></i> October 20, 2025
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-clock"></i> 1:00 PM
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-geo-alt"></i> Entrepreneurship Center
+                </div>
+              </div>
+              <p class="card-text">Pitch your business idea to a panel of industry experts and investors, with a chance to win funding for your startup.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="event-price">$10.00</span>
+                <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Event 6 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card event-card h-100">
+            <div class="event-image">
+              <span class="event-status status-upcoming">Upcoming</span>
+              <img src="https://images.pexels.com/photos/2381069/pexels-photo-2381069.jpeg" class="card-img-top" alt="Arts Festival">
+              <span class="event-category">Arts</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">University Arts Festival</h5>
+              <div class="event-meta">
+                <div class="event-meta-item">
+                  <i class="bi bi-calendar3"></i> November 15, 2025
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-clock"></i> 11:00 AM
+                </div>
+                <div class="event-meta-item">
+                  <i class="bi bi-geo-alt"></i> Arts Center
+                </div>
+              </div>
+              <p class="card-text">Celebrate creativity with performances, exhibitions, and workshops showcasing the university's artistic talent.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="event-price">Free</span>
+                <a href="event-details.html" class="btn btn-outline-primary">Get Notified</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <nav class="mt-5" aria-label="Events pagination">
+        <ul class="pagination justify-content-center">
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="bg-light py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h3 class="fw-bold">Want to host your own event?</h3>
+          <p class="mb-0 mb-md-0">Contact the event committee to discuss organizing your own university event.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+          <a href="contact.html" class="btn btn-primary">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+          <h5 class="text-white mb-4">UniEvent</h5>
+          <p class="text-muted mb-4">Your comprehensive solution for university event management, registration, and attendance tracking.</p>
+          <div class="social-links">
+            <a href="#" class="me-2"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="me-2"><i class="bi bi-twitter"></i></a>
+            <a href="#" class="me-2"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="me-2"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+          <h5 class="text-white mb-4">Quick Links</h5>
+          <ul class="list-unstyled footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+          <h5 class="text-white mb-4">Resources</h5>
+          <ul class="list-unstyled footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+          </ul>
+        </div>
+        
+        <div class="col-lg-4 col-md-4">
+          <h5 class="text-white mb-4">Stay Updated</h5>
+          <p class="text-muted mb-4">Subscribe to our newsletter for the latest events and updates.</p>
+          <form class="mb-3">
+            <div class="input-group">
+              <input type="email" class="form-control" placeholder="Your email address" aria-label="Your email address">
+              <button class="btn btn-primary" type="button">Subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <hr class="mt-4 mb-3">
+      
+      <div class="row">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="text-muted mb-0">&copy; 2025 UniEvent. All rights reserved.</p>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <p class="text-muted mb-0">Designed with <i class="bi bi-heart-fill text-danger"></i> for university events</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/scripts.js"></script>
+</body>
+</html>
