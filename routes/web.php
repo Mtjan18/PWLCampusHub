@@ -7,6 +7,8 @@ use App\Http\Middleware\Admin;
 use App\Http\Middleware\Member;
 use App\Http\Middleware\Panitia;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Panitia\PanitiaController;
+
 
 
 Route::get('/', function () {
@@ -44,7 +46,19 @@ Route::get('/member/dashboard', function () {
 })->middleware(['auth', Member::class])->name('member.dashboard');
 
 // Route dashboard untuk PANITIA 
-Route::get('/panitia/dashboard', function () {
-    return view('panitia.dashboard');
-})->middleware(['auth', Panitia::class])->name('panitia.dashboard');
+Route::middleware(['auth', Panitia::class])->prefix('panitia')->name('panitia.')->group(function () {
+    Route::get('/dashboard', [PanitiaController::class, 'dashboard'])->name('dashboard');
+
+    // Event
+    Route::get('/events/create', [PanitiaController::class, 'createEvent'])->name('events.create');
+    Route::post('/events/store', [PanitiaController::class, 'storeEvent'])->name('events.store');
+
+    // Event Session
+    Route::get('/events/{event}/sessions/create', [PanitiaController::class, 'createSession'])->name('sessions.create');
+    Route::post('/events/{event}/sessions/store', [PanitiaController::class, 'storeSession'])->name('sessions.store');
+
+    // Tambahkan route panitia lainnya di sini ke depan
+});
+
+
 require __DIR__ . '/auth.php';
