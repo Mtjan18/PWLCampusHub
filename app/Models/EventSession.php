@@ -15,8 +15,9 @@ class EventSession extends Model
         'event_id',
         'name',
         'session_date',
-        'session_time',
         'location',
+        'start_time',
+        'end_time',
     ];
 
     /**

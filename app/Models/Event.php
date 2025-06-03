@@ -12,13 +12,14 @@ class Event extends Model
     protected $fillable = [
         'name',
         'date',
-        'time',
         'location',
         'poster_url',
         'registration_fee',
         'max_participants',
         'created_by',
         'status',
+        'start_time',
+        'end_time',
     ];
 
     /**

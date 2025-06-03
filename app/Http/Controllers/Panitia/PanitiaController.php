@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Panitia;
 
 use App\Models\Event;
 use App\Models\EventSession;
+use App\Models\Speaker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -14,7 +15,6 @@ class PanitiaController extends Controller
     {
         $userId = auth::id();
 
-        // Ambil semua event yang dibuat oleh panitia ini
         $events = Event::where('created_by', $userId)->get();
 
         $eventCount = $events->count();
@@ -30,26 +30,23 @@ class PanitiaController extends Controller
         $activeCount = $activeEvents->count();
         $completedCount = $completedEvents->count();
 
-        // Total registrasi
         $registrationTotal = $events->sum(function ($event) {
             return $event->registrations()->count();
         });
 
-        // Registrasi minggu ini
         $weeklyRegistration = $events->sum(function ($event) {
             return $event->registrations()
                 ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
                 ->count();
         });
 
-        // Rate kehadiran
         $attendanceRate = 0;
         $totalAttendances = 0;
         $totalRegistrations = 0;
 
         foreach ($events as $event) {
             $registrations = $event->registrations()->count();
-            $attendances = $event->attendances()->count(); // pastikan relasi ada
+            $attendances = $event->attendances()->count();
             $totalRegistrations += $registrations;
             $totalAttendances += $attendances;
         }
@@ -58,7 +55,6 @@ class PanitiaController extends Controller
             $attendanceRate = round(($totalAttendances / $totalRegistrations) * 100, 2);
         }
 
-        // Ambil active events lengkap dengan jumlah peserta
         $activeEventsDetailed = Event::withCount('registrations')
             ->where('created_by', $userId)
             ->where('date', '>=', now())
@@ -72,9 +68,8 @@ class PanitiaController extends Controller
             'weeklyRegistration',
             'attendanceRate',
             'activeEventsDetailed'
-        ))->with('activeEvents', $activeEventsDetailed); // agar tetap support @forelse
+        ))->with('activeEvents', $activeEventsDetailed);
     }
-
 
     public function createEvent()
     {
@@ -86,7 +81,8 @@ class PanitiaController extends Controller
         $request->validate([
             'name' => 'required|string|max:200',
             'date' => 'required|date',
-            'time' => 'required',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
             'location' => 'required|string|max:255',
             'poster_url' => 'nullable|url',
             'registration_fee' => 'nullable|numeric',
@@ -96,7 +92,8 @@ class PanitiaController extends Controller
         $event = Event::create([
             'name' => $request->name,
             'date' => $request->date,
-            'time' => $request->time,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
             'location' => $request->location,
             'poster_url' => $request->poster_url,
             'registration_fee' => $request->registration_fee ?? 0.00,
@@ -118,18 +115,51 @@ class PanitiaController extends Controller
         $request->validate([
             'name' => 'required|string|max:200',
             'session_date' => 'required|date',
-            'session_time' => 'required',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
             'location' => 'required|string|max:255',
+            'speakers.*' => 'nullable|string|max:100',
         ]);
 
-        EventSession::create([
+        $session = EventSession::create([
             'event_id' => $event->id,
             'name' => $request->name,
             'session_date' => $request->session_date,
-            'session_time' => $request->session_time,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
             'location' => $request->location,
         ]);
 
-        return redirect()->route('panitia.dashboard')->with('success', 'Sesi berhasil ditambahkan.');
+        if ($request->has('speakers')) {
+            foreach ($request->speakers as $speakerName) {
+                if (!empty($speakerName)) {
+                    Speaker::create([
+                        'session_id' => $session->id,
+                        'name' => $speakerName,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('panitia.dashboard')->with('success', 'Sesi dan speakers berhasil dibuat.');
+    }
+
+    public function createSpeaker(EventSession $session)
+    {
+        return view('panitia.speakers.create', compact('session'));
+    }
+
+    public function storeSpeaker(Request $request, EventSession $session)
+    {
+        $request->validate([
+            'name' => 'required|string|max:100',
+        ]);
+
+        Speaker::create([
+            'session_id' => $session->id,
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('panitia.dashboard')->with('success', 'Speaker berhasil ditambahkan.');
     }
 }

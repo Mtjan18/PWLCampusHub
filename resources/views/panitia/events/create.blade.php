@@ -21,10 +21,16 @@
             <input type="date" name="date" class="form-control" required value="{{ old('date') }}">
         </div>
 
-        {{-- Time --}}
+        {{-- Start Time --}}
         <div class="mb-3">
-            <label for="time" class="form-label">Time</label>
-            <input type="time" name="time" class="form-control" required value="{{ old('time') }}">
+            <label for="start_time" class="form-label">Start Time</label>
+            <input type="time" name="start_time" class="form-control" required value="{{ old('start_time') }}">
+        </div>
+
+        {{-- End Time --}}
+        <div class="mb-3">
+            <label for="end_time" class="form-label">End Time</label>
+            <input type="time" name="end_time" class="form-control" required value="{{ old('end_time') }}">
         </div>
 
         {{-- Location --}}

@@ -57,7 +57,9 @@ Route::middleware(['auth', Panitia::class])->prefix('panitia')->name('panitia.')
     Route::get('/events/{event}/sessions/create', [PanitiaController::class, 'createSession'])->name('sessions.create');
     Route::post('/events/{event}/sessions/store', [PanitiaController::class, 'storeSession'])->name('sessions.store');
 
-    // Tambahkan route panitia lainnya di sini ke depan
+    // speaker
+    Route::get('/panitia/sessions/{session}/speakers/create', [PanitiaController::class, 'createSpeaker'])->name('panitia.speakers.create');
+    Route::post('/panitia/sessions/{session}/speakers/store', [PanitiaController::class, 'storeSpeaker'])->name('panitia.speakers.store');
 });
 
 
