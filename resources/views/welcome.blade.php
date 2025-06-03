@@ -26,7 +26,7 @@
             <a class="nav-link active" href="index.html">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="events.html">Events</a>
+            <a class="nav-link" href="{{ route('events') }}">Events</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="about.html">About</a>
@@ -48,7 +48,7 @@
           <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">University Event Management</h1>
           <p class="lead mb-5 animate__animated animate__fadeInUp">Register for events, track attendance, and get certificates - all in one place</p>
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center animate__animated animate__fadeInUp animate__delay-1s">
-            <a href="events.html" class="btn btn-primary btn-lg px-4 gap-3">Explore Events</a>
+            <a href="{{ route('events') }}" class="btn btn-primary btn-lg px-4 gap-3">Explore Events</a>
             <a href="{{ url('/register') }}" class="btn btn-outline-light btn-lg px-4">Sign Up</a>
           </div>
         </div>
@@ -133,7 +133,7 @@
       </div>
       
       <div class="text-center mt-5">
-        <a href="events.html" class="btn btn-primary">View All Events</a>
+        <a href="{{ route('events') }}" class="btn btn-primary">View All Events</a>
       </div>
     </div>
   </section>

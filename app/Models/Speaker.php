@@ -14,6 +14,8 @@ class Speaker extends Model
         'name',
     ];
 
+    public $timestamps = false;
+
     /**
      * Relasi: Speaker milik satu EventSession
      */

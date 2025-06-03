@@ -8,7 +8,7 @@ use App\Http\Middleware\Member;
 use App\Http\Middleware\Panitia;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Panitia\PanitiaController;
-
+use App\Http\Controllers\Panitia\EventController;
 
 
 Route::get('/', function () {
@@ -19,6 +19,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/events', [App\Http\Controllers\Panitia\EventController::class, 'publicIndex'])->name('events');
 
 
 // Route::middleware('auth')->group(function () {
@@ -27,7 +28,9 @@ Route::get('/dashboard', function () {
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 
-
+Route::get('/events/{event}', [EventController::class, 'show'])
+    ->middleware('auth')
+    ->name('events.show');
 // Route dashboard untuk ADMIN
 
 Route::middleware(['auth', Admin::class])->prefix('admin')->name('admin.')->group(function () {
@@ -60,6 +63,8 @@ Route::middleware(['auth', Panitia::class])->prefix('panitia')->name('panitia.')
     // speaker
     Route::get('/panitia/sessions/{session}/speakers/create', [PanitiaController::class, 'createSpeaker'])->name('panitia.speakers.create');
     Route::post('/panitia/sessions/{session}/speakers/store', [PanitiaController::class, 'storeSpeaker'])->name('panitia.speakers.store');
+
+    Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
 });
 
 

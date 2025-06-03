@@ -53,4 +53,16 @@ class Event extends Model
     {
         return $query->where('status', 1);
     }
+
+    public function attendances()
+    {
+        return $this->hasManyThrough(
+            Attendance::class,
+            EventRegistration::class,
+            'event_id',          // Foreign key di event_registrations
+            'registration_id',   // Foreign key di attendance
+            'id',                // Primary key di events
+            'id'                 // Primary key di event_registrations
+        );
+    }
 }

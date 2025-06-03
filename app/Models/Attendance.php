@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Attendance extends Model
 {
     use HasFactory;
+    
+    protected $table = 'attendance';
 
     protected $fillable = [
         'registration_id',

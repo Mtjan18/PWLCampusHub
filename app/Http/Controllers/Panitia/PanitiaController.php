@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panitia;
 use App\Models\Event;
 use App\Models\EventSession;
 use App\Models\Speaker;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -20,8 +21,9 @@ class PanitiaController extends Controller
         $eventCount = $events->count();
 
         $activeEvents = $events->filter(function ($event) {
-            return $event->date >= now();
+            return $event->date >= now() && $event->status == 1;
         });
+
 
         $completedEvents = $events->filter(function ($event) {
             return $event->date < now();
@@ -162,4 +164,6 @@ class PanitiaController extends Controller
 
         return redirect()->route('panitia.dashboard')->with('success', 'Speaker berhasil ditambahkan.');
     }
+
+    
 }
