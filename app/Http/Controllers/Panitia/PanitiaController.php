@@ -16,7 +16,8 @@ class PanitiaController extends Controller
     {
         $userId = auth::id();
 
-        $events = Event::where('created_by', $userId)->get();
+        $events = Event::all();
+
 
         $eventCount = $events->count();
 
@@ -58,9 +59,9 @@ class PanitiaController extends Controller
         }
 
         $activeEventsDetailed = Event::withCount('registrations')
-            ->where('created_by', $userId)
             ->where('date', '>=', now())
             ->get();
+
 
         return view('panitia.dashboard', compact(
             'eventCount',
@@ -103,8 +104,8 @@ class PanitiaController extends Controller
             'created_by' => Auth::id(),
         ]);
 
-        return redirect()->route('panitia.sessions.create', $event->id)
-            ->with('success', 'Event berhasil dibuat. Tambahkan sesi sekarang.');
+        return redirect()->route('panitia.events.show', $event->id)
+            ->with('success', 'Event berhasil dibuat.');
     }
 
     public function createSession(Event $event)
@@ -164,6 +165,4 @@ class PanitiaController extends Controller
 
         return redirect()->route('panitia.dashboard')->with('success', 'Speaker berhasil ditambahkan.');
     }
-
-    
 }

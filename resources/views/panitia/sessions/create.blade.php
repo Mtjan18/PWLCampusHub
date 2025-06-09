@@ -22,7 +22,7 @@
             <input type="text" class="form-control mb-1" value="{{ $event->date }}" disabled>
 
             <label for="session_date" class="form-label">Tanggal Sesi</label>
-            <input type="date" class="form-control" id="session_date" name="session_date" required>
+            <input type="date" class="form-control" id="session_date" name="session_date" required min="{{ $event->date }}">
         </div>
 
         <div class="mb-3">

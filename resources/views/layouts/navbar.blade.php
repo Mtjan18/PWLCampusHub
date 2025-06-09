@@ -1,4 +1,4 @@
-      <nav class="navbar navbar-expand navbar-light bg-white topbar">
+<nav class="navbar navbar-expand navbar-light bg-white topbar">
           <button class="btn btn-link d-lg-none" id="sidebarToggle">
               <i class="bi bi-list"></i>
           </button>
@@ -7,7 +7,7 @@
               <!-- Tambahan link Dashboard dan Events -->
               <div class="nav-item d-flex align-items-center me-3">
                   <a class="nav-link text-primary fw-semibold" href="dashboard.html">Dashboard</a>
-                  <a class="nav-link text-primary fw-semibold ms-3" href="events.html">Events</a>
+                  <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('events') }}">Events</a>
               </div>
 
               <!-- Notifikasi -->
@@ -61,12 +61,12 @@
               <div class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                       data-bs-toggle="dropdown" aria-expanded="false">
-                      <span class="d-none d-lg-inline text-gray-600 me-2">Emma Johnson</span>
+                      <span class="d-none d-lg-inline text-gray-600 me-2">{{ Auth::user()->name }}</span>
                       <img class="rounded-circle" src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg"
                           alt="User Avatar" width="32" height="32">
                   </a>
                   <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                      <a class="dropdown-item" href="member-profile.html">
+                      <a class="dropdown-item" href="#">
                           <i class="bi bi-person me-2 text-gray-400"></i>
                           Profile
                       </a>
@@ -75,10 +75,13 @@
                           Settings
                       </a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#" id="logoutBtn">
-                          <i class="bi bi-box-arrow-right me-2 text-gray-400"></i>
-                          Logout
-                      </a>
+                      <form method="POST" action="{{ route('logout') }}">
+                          @csrf
+                          <button type="submit" class="dropdown-item">
+                              <i class="bi bi-box-arrow-right me-2 text-gray-400"></i>
+                              Logout
+                          </button>
+                      </form>
                   </div>
               </div>
           </div>

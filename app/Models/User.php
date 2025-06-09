@@ -25,4 +25,24 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function eventRegistrations()
+    {
+        return $this->hasMany(\App\Models\EventRegistration::class, 'user_id');
+    }
+    public function certificates()
+    {
+        return $this->hasManyThrough(
+            \App\Models\Certificate::class,
+            \App\Models\EventRegistration::class,
+            'user_id',           // Foreign key di event_registrations
+            'registration_id',   // Foreign key di certificates
+            'id',                // Local key di users
+            'id'                 // Local key di event_registrations
+        );
+    }
+    public function attendances()
+    {
+        return $this->hasManyThrough(\App\Models\Attendance::class, \App\Models\EventRegistration::class, 'user_id', 'registration_id', 'id', 'id');
+    }
 }
