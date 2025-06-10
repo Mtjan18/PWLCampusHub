@@ -43,7 +43,14 @@ class Event extends Model
      */
     public function registrations()
     {
-        return $this->hasMany(EventRegistration::class);
+        return $this->hasManyThrough(
+            \App\Models\EventRegistration::class,
+            \App\Models\EventSession::class,
+            'event_id',    // Foreign key di event_sessions
+            'session_id',  // Foreign key di event_registrations
+            'id',          // Local key di events
+            'id'           // Local key di event_sessions
+        );
     }
 
     /**
@@ -57,12 +64,12 @@ class Event extends Model
     public function attendances()
     {
         return $this->hasManyThrough(
-            Attendance::class,
-            EventRegistration::class,
-            'event_id',          // Foreign key di event_registrations
-            'registration_id',   // Foreign key di attendance
-            'id',                // Primary key di events
-            'id'                 // Primary key di event_registrations
+            \App\Models\Attendance::class,
+            \App\Models\EventSession::class,
+            'event_id',    // Foreign key di event_sessions
+            'session_id',  // Foreign key di attendance
+            'id',          // Local key di events
+            'id'           // Local key di event_sessions
         );
     }
 }

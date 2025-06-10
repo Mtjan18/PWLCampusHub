@@ -1,0 +1,94 @@
+-- Tabel Roles
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+INSERT INTO roles (name) VALUES('member'), ('admin'), ('tim_keuangan'), ('panitia');
+
+-- Tabel Users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+-- Tabel Event
+CREATE TABLE events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    date DATE NOT NULL,
+    time TIME NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    poster_url VARCHAR(255),
+    registration_fee DECIMAL(10,2) DEFAULT 0.00,
+    max_participants INT DEFAULT 0,
+    created_by INT NOT NULL, -- user_id dari panitia
+    status TINYINT(1) DEFAULT 1, -- 1 = aktif, 0 = nonaktif
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+CREATE TABLE event_sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    event_id INT NOT NULL,
+    name VARCHAR(200) NOT NULL, -- Nama sesi, contoh: "Hari 1 - Workshop AI"
+    session_date DATE NOT NULL,
+    session_time TIME NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES events(id)
+);
+
+
+-- Tabel Speakers
+CREATE TABLE speakers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    session_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    FOREIGN KEY (session_id) REFERENCES event_sessions(id)
+);
+
+
+
+
+CREATE TABLE event_registrations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    session_id INT NOT NULL, -- foreign key ke event_sessions
+    payment_proof_url VARCHAR(255),
+    payment_status INT DEFAULT 0, -- 0: pending, 1: terverifikasi, 2: ditolak
+    qr_code VARCHAR(255),
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, session_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (session_id) REFERENCES event_sessions(id)
+);
+
+
+-- Tabel Kehadiran
+CREATE TABLE attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    registration_id INT NOT NULL,
+    session_id INT NOT NULL, -- sesi spesifik dari event
+    scan_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    scanned_by INT NOT NULL, -- user_id panitia
+    FOREIGN KEY (registration_id) REFERENCES event_registrations(id),
+    FOREIGN KEY (session_id) REFERENCES event_sessions(id),
+    FOREIGN KEY (scanned_by) REFERENCES users(id),
+    UNIQUE (registration_id, session_id) -- mencegah peserta dicatat hadir lebih dari sekali per sesi
+);
+
+-- Tabel Sertifikat
+CREATE TABLE certificates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    registration_id INT NOT NULL,
+    certificate_url VARCHAR(255),
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    uploaded_by INT NOT NULL, -- user_id panitia
+    FOREIGN KEY (registration_id) REFERENCES event_registrations(id),
+    FOREIGN KEY (uploaded_by) REFERENCES users(id)
+);

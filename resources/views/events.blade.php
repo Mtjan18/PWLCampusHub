@@ -108,8 +108,27 @@
           </li>
         </ul>
         <div class="d-flex">
-          <a href="{{ url('/login') }}" class="btn btn-outline-light me-2">Login</a>
-          <a href="{{ url('/register') }}" class="btn btn-light">Register</a>
+          @guest
+            <a href="{{ url('/login') }}" class="btn btn-outline-light me-2">Login</a>
+            <a href="{{ url('/register') }}" class="btn btn-light">Register</a>
+          @else
+            <div class="dropdown">
+              <a class="btn btn-light dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="{{ route('member.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                <li><a class="dropdown-item" href="{{ route('member.events') }}"><i class="bi bi-calendar-event me-2"></i> My Events</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i> Logout</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          @endguest
         </div>
       </div>
     </div>
@@ -251,7 +270,7 @@
                         <i class="bi bi-box-arrow-in-right"></i> Login untuk Daftar
                     </a>
                 @else
-                    <a href="{{ url('/events/' . $event->id) }}" class="btn btn-primary mt-3 w-100" aria-label="Detail {{ $event->name }}">
+                    <a href="{{ route('member.events.show', $event->id) }}" class="btn btn-primary mt-3 w-100" aria-label="Detail {{ $event->name }}">
                         <i class="bi bi-info-circle"></i> Detail & Daftar
                     </a>
                 @endguest
