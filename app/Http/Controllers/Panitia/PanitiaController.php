@@ -9,6 +9,7 @@ use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\EventRegistration;
 
 class PanitiaController extends Controller
 {
@@ -39,7 +40,7 @@ class PanitiaController extends Controller
 
         $weeklyRegistration = $events->sum(function ($event) {
             return $event->registrations()
-                ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+                ->whereBetween('event_registrations.created_at', [now()->startOfWeek(), now()->endOfWeek()])
                 ->count();
         });
 
@@ -164,5 +165,71 @@ class PanitiaController extends Controller
         ]);
 
         return redirect()->route('panitia.dashboard')->with('success', 'Speaker berhasil ditambahkan.');
+    }
+
+    public function scanAttendance(Request $request)
+    {
+        $events = \App\Models\Event::with('sessions')->orderBy('date')->get();
+        $selectedEventId = $request->event_id ?? ($events->first()->id ?? null);
+        $sessions = $selectedEventId
+            ? \App\Models\EventSession::where('event_id', $selectedEventId)->orderBy('session_date')->get()
+            : collect();
+        $selectedSessionId = $request->session_id ?? ($sessions->first()->id ?? null);
+
+        // Ambil peserta untuk sesi terpilih
+        $registrations = $selectedSessionId
+            ? \App\Models\EventRegistration::with(['user', 'attendances' => function ($q) use ($selectedSessionId) {
+                $q->where('session_id', $selectedSessionId);
+            }])->where('session_id', $selectedSessionId)->get()
+            : collect();
+
+        return view('panitia.attendance.scan', compact(
+            'events',
+            'sessions',
+            'registrations',
+            'selectedEventId',
+            'selectedSessionId'
+        ));
+    }
+
+    public function storeAttendance(Request $request)
+    {
+        $request->validate([
+            'qr_data' => 'required',
+            'session_id' => 'required|exists:event_sessions,id',
+        ]);
+
+        // Dekripsi QR (isi: id registrasi)
+        try {
+            $registrationId = decrypt($request->qr_data);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'QR tidak valid.']);
+        }
+
+        $registration = EventRegistration::find($registrationId);
+        if (!$registration) {
+            return response()->json(['status' => 'error', 'message' => 'Registrasi tidak ditemukan.']);
+        }
+
+        // Cek sudah hadir atau belum
+        $already = Attendance::where('registration_id', $registrationId)
+            ->where('session_id', $request->session_id)
+            ->exists();
+
+        if ($already) {
+            return response()->json(['status' => 'already', 'message' => 'Peserta sudah tercatat hadir.']);
+        }
+
+        Attendance::create([
+            'registration_id' => $registrationId,
+            'session_id' => $request->session_id,
+            'scanned_by' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Presensi berhasil!',
+            'registration_id' => $registrationId // <-- tambahkan ini
+        ]);
     }
 }

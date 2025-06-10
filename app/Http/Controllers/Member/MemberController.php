@@ -52,9 +52,11 @@ class MemberController extends Controller
         $pendingCertificates = $registeredEvents - $certificatesCount;
 
         // Payments
+
         $totalPaid = $registrations->where('payment_status', 1)->sum(function ($reg) {
-            return $reg->event->registration_fee ?? 0;
+            return $reg->session && $reg->session->event ? $reg->session->event->registration_fee : 0;
         });
+
         $recentPayments = $registrations->where('payment_status', '!=', null)->take(4);
 
         // Attendance

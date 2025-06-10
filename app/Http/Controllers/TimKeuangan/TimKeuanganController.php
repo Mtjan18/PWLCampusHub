@@ -50,10 +50,10 @@ class TimKeuanganController extends Controller
         $qrData = encrypt($registration->id);
 
         // Generate QR code PNG
-        $qrCodeImage = QrCode::format('svg')->size(300)->generate($qrData);
+        $qrCodeImage = QrCode::format('png')->size(300)->generate($qrData);
 
         // Simpan file QR code ke storage/public/qrcodes
-        $fileName = 'qrcodes/qr_' . $registration->id . '.svg';
+        $fileName = 'qrcodes/qr_' . $registration->id . '.png';
         Storage::disk('public')->put($fileName, $qrCodeImage);
 
         // Update status pembayaran & simpan path QR code

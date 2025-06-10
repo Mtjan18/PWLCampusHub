@@ -19,12 +19,12 @@
                         <a href="{{ route('panitia.events.create') }}" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-2"></i> New Event
                         </a>
-                        {{-- <a href="{{ route('panitia.attendance.scan') }}" class="btn btn-success">
-            <i class="bi bi-qr-code-scan me-2"></i> Scan Attendance
-          </a>
-          <a href="{{ route('panitia.certificates.upload') }}" class="btn btn-info text-white">
-            <i class="bi bi-upload me-2"></i> Upload Certificates
-          </a> --}}
+                        <a href="{{ route('panitia.attendance.scan') }}" class="btn btn-success">
+                            <i class="bi bi-qr-code-scan me-2"></i> Scan Attendance
+                        </a>
+                        {{-- <a href="{{ route('panitia.certificates.upload') }}" class="btn btn-info text-white">
+                            <i class="bi bi-upload me-2"></i> Upload Certificates
+                        </a> --}}
                     </div>
                 </div>
             </div>

@@ -7,65 +7,74 @@
     <div class="row g-4 align-items-start">
         <!-- Poster & Info -->
         <div class="col-lg-5">
-            <div class="card shadow border-0 mb-3">
-                <img src="{{ $event->poster_url ?? asset('images/default-event.jpg') }}" class="card-img-top rounded-top" alt="{{ $event->name }}" style="object-fit:cover; height:320px;">
+            <div class="card shadow border-0 mb-3 animate__fadeInUp">
+                <div class="event-poster position-relative">
+                    <img src="{{ $event->poster_url ?? asset('images/default-event.jpg') }}" class="card-img-top rounded-top event-image" alt="{{ $event->name }}" style="object-fit:cover; height:320px;">
+                    <span class="badge position-absolute top-0 end-0 m-3 {{ $event->status == 1 ? 'bg-success' : 'bg-danger' }} animate__fadeInDown">
+                        <i class="bi bi-{{ $event->status == 1 ? 'check-circle' : 'x-circle' }}"></i>
+                        {{ $event->status == 1 ? 'Aktif' : 'Nonaktif' }}
+                    </span>
+                </div>
                 <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-2">
-                        <span class="badge {{ $event->status == 1 ? 'bg-success' : 'bg-danger' }}">
-                            <i class="bi bi-{{ $event->status == 1 ? 'check-circle' : 'x-circle' }}"></i>
-                            {{ $event->status == 1 ? 'Aktif' : 'Nonaktif' }}
-                        </span>
+                    <h3 class="fw-bold mb-2 text-primary">{{ $event->name }}</h3>
+                    <div class="mb-2 text-muted small">
+                        Dibuat oleh: <span class="fw-semibold">{{ $event->creator->name ?? '-' }}</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
                         @if($event->registration_fee > 0)
-                            <span class="badge bg-warning text-dark">
-                                <i class="bi bi-cash"></i> Rp{{ number_format($event->registration_fee,0,',','.') }}
-                            </span>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-cash"></i> Rp{{ number_format($event->registration_fee,0,',','.') }}</span>
                         @else
-                            <span class="badge bg-success">
-                                <i class="bi bi-gift"></i> Gratis
-                            </span>
+                            <span class="badge bg-success"><i class="bi bi-gift"></i> Gratis</span>
                         @endif
                         <span class="badge bg-info text-dark">
                             <i class="bi bi-people"></i>
                             {{ $event->registrations_count ?? ($event->registrations->count() ?? 0) }}/{{ $event->max_participants > 0 ? $event->max_participants : '∞' }} Peserta
                         </span>
                     </div>
-                    <div class="mb-2">
-                        <i class="bi bi-calendar-event"></i>
-                        {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}
-                    </div>
-                    <div class="mb-2">
-                        <i class="bi bi-clock"></i>
-                        {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }} WIB
-                    </div>
-                    <div>
-                        <i class="bi bi-geo-alt"></i>
-                        {{ $event->location }}
-                    </div>
+                    <div class="mb-2"><i class="bi bi-calendar-event"></i> {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}</div>
+                    <div class="mb-2"><i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }} WIB</div>
+                    <div class="mb-3"><i class="bi bi-geo-alt"></i> {{ $event->location }}</div>
+                    <!-- Progress Bar Peserta -->
+                    @if($event->max_participants > 0)
+                        @php
+                            $percent = min(100, round((($event->registrations_count ?? ($event->registrations->count() ?? 0)) / $event->max_participants) * 100));
+                        @endphp
+                        <div class="mb-2">
+                            <div class="progress" style="height: 18px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: {{ $percent }}%;" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100">
+                                    {{ $percent }}%
+                                </div>
+                            </div>
+                            <div class="small text-muted mt-1">Kapasitas peserta</div>
+                        </div>
+                    @endif
                 </div>
-            </div>
-            <div class="text-center mt-3">
-                <a href="{{ route('panitia.sessions.create', $event->id) }}" class="btn btn-outline-primary w-100 mb-2">
-                    <i class="bi bi-plus-circle"></i> Tambah Sesi
-                </a>
-                <a href="{{ route('panitia.dashboard') }}" class="btn btn-secondary w-100">
-                    <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-                </a>
+                <div class="text-center mt-3 mb-3">
+                    @if(auth()->user() && auth()->user()->role->name == 'panitia')
+                        <a href="{{ route('panitia.sessions.create', $event->id) }}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="bi bi-plus-circle"></i> Tambah Sesi
+                        </a>
+                        <a href="{{ route('panitia.dashboard') }}" class="btn btn-secondary w-100">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                        </a>
+                    @elseif(auth()->user() && auth()->user()->role->name == 'member')
+                        <a href="{{ route('member.dashboard') }}" class="btn btn-secondary w-100">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
         <!-- Detail Event -->
         <div class="col-lg-7">
-            <div class="card shadow border-0">
+            <div class="card shadow border-0 animate__fadeInUp">
                 <div class="card-body">
-                    <h2 class="fw-bold mb-1">{{ $event->name }}</h2>
-                    <div class="mb-3 text-muted small">
-                        Dibuat oleh: <span class="fw-semibold">{{ $event->creator->name ?? '-' }}</span>
-                    </div>
                     <div class="mb-4">
-                        <h5 class="fw-semibold">Deskripsi Event</h5>
+                        <h5 class="fw-semibold text-primary"><i class="bi bi-info-circle"></i> Deskripsi Event</h5>
                         <p class="mb-0">{{ $event->description ?? '-' }}</p>
                     </div>
                     <div class="mb-4">
-                        <h5 class="fw-semibold">Daftar Sesi</h5>
+                        <h5 class="fw-semibold text-primary"><i class="bi bi-list-ol"></i> Daftar Sesi</h5>
                         @if($event->sessions && $event->sessions->count())
                             <div class="timeline">
                                 @foreach($event->sessions as $session)
@@ -92,21 +101,39 @@
                             </div>
                         @else
                             <div class="alert alert-info mb-0">
-                                Belum ada sesi. <a href="{{ route('panitia.sessions.create', $event->id) }}" class="btn btn-sm btn-primary ms-2"><i class="bi bi-plus-circle"></i> Tambah Sesi</a>
+                                Belum ada sesi.
+                                @if(auth()->user() && auth()->user()->role->name == 'panitia')
+                                    <a href="{{ route('panitia.sessions.create', $event->id) }}" class="btn btn-sm btn-primary ms-2">
+                                        <i class="bi bi-plus-circle"></i> Tambah Sesi
+                                    </a>
+                                @endif
                             </div>
                         @endif
                     </div>
-                    <div>
-                        {{-- Tambahkan fitur lain di sini, misal: daftar peserta, edit event, dsb --}}
-                    </div>
+                    {{-- Contoh tambahan: Daftar Panitia --}}
+                    @if(isset($event->committee) && count($event->committee))
+                        <div class="mb-4">
+                            <h5 class="fw-semibold text-primary"><i class="bi bi-people-fill"></i> Panitia Event</h5>
+                            @foreach($event->committee as $panitia)
+                                <span class="badge bg-dark mb-1">{{ $panitia->name }}</span>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Optional: Timeline CSS --}}
+{{-- Optional: Timeline CSS & Animasi --}}
 <style>
+.event-poster img.event-image {
+    transition: transform 0.4s cubic-bezier(.4,2,.3,1);
+}
+.event-poster img.event-image:hover {
+    transform: scale(1.04) rotate(-1deg);
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.15);
+}
 .timeline {
     border-left: 3px solid #0d6efd;
     margin-left: 10px;
@@ -126,6 +153,20 @@
     border: 3px solid #0d6efd;
     border-radius: 50%;
     z-index: 1;
+}
+.animate__fadeInUp {
+    animation: fadeInUp 0.8s ease forwards;
+}
+.animate__fadeInDown {
+    animation: fadeInDown 0.8s ease forwards;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px);}
+    to { opacity: 1; transform: translateY(0);}
 }
 </style>
 @endsection

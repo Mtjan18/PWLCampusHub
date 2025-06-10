@@ -1,4 +1,3 @@
-{{-- filepath: resources/views/tim_keuangan/payments/show.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Payment Detail')
