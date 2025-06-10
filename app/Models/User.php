@@ -26,9 +26,10 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+
     public function eventRegistrations()
     {
-        return $this->hasMany(\App\Models\EventRegistration::class, 'user_id');
+        return $this->hasMany(EventRegistration::class, 'user_id');
     }
     public function certificates()
     {

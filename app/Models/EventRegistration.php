@@ -10,12 +10,22 @@ class EventRegistration extends Model
     public $timestamps = false; // karena pakai registered_at, bukan created_at
 
     protected $fillable = [
-        'user_id', 'event_id', 'payment_proof_url', 'payment_status', 'qr_code', 'registered_at'
+        'user_id',
+        'session_id',
+        'payment_proof_url',
+        'payment_status',
+        'qr_code',
+        'registered_at'
     ];
+
+    public function session()
+    {
+        return $this->belongsTo(EventSession::class, 'session_id');
+    }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function event()

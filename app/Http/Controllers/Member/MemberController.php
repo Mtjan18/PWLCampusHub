@@ -13,12 +13,29 @@ use Carbon\Carbon;
 
 class MemberController extends Controller
 {
+
+
+    public function events()
+    {
+
+        return view('member.events');
+    }
+
+    public function showEvent(\App\Models\Event $event)
+    {
+        $event->load(['sessions.speakers', 'registrations']);
+        $user = Auth::user();
+        $userRegistration = $event->registrations()
+            ->where('user_id', $user->id)
+            ->first();
+        return view('member.events.show', compact('event', 'userRegistration'));
+    }
     public function dashboard()
     {
         $user = Auth::user();
 
         // Registrasi event user
-        $registrations = $user->eventRegistrations()->with('event')->latest()->get();
+        $registrations = $user->eventRegistrations()->with('session.event')->latest()->get();
 
         // Statistik event
         $registeredEvents = $registrations->count();
@@ -28,7 +45,7 @@ class MemberController extends Controller
         // Sertifikat
         $certificates = Certificate::whereHas('registration', function ($q) use ($user) {
             $q->where('user_id', $user->id);
-        })->with('registration.event')->latest()->take(2)->get();
+        })->with('registration.event')->orderBy('uploaded_at', 'desc')->take(2)->get();
         $certificatesCount = Certificate::whereHas('registration', function ($q) use ($user) {
             $q->where('user_id', $user->id);
         })->count();
@@ -60,8 +77,58 @@ class MemberController extends Controller
         ));
     }
 
-    // Tambahkan method lain sesuai kebutuhan, misal:
-    // public function events() { ... }
-    // public function payments() { ... }
-    // public function certificates() { ... }
+    public function certificates()
+    {
+        $user = Auth::user();
+        $certificates = \App\Models\Certificate::whereHas('registration', function ($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->with('registration.event')->orderBy('uploaded_at', 'desc')->get();
+
+        return view('member.certificates', compact('certificates'));
+    }
+
+    public function payments()
+    {
+        $user = Auth::user();
+        $registrations = $user->eventRegistrations()->with('event')->whereNotNull('payment_status')->orderByDesc('registered_at')->get();
+
+        return view('member.payments', compact('registrations'));
+    }
+
+    public function registerSession(Request $request, $eventId, $sessionId)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        $proofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
+
+        $exists = \App\Models\EventRegistration::where('user_id', $user->id)
+            ->where('session_id', $sessionId)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('warning', 'Anda sudah terdaftar di sesi ini.');
+        }
+
+        \App\Models\EventRegistration::create([
+            'user_id' => $user->id,
+            'session_id' => $sessionId, // <-- WAJIB DIISI!
+            'payment_proof_url' => $proofPath,
+            'payment_status' => 0,
+        ]);
+
+        return back()->with('success', 'Registrasi berhasil! Tunggu verifikasi pembayaran.');
+    }
+    public function cancelRegistration($registrationId)
+    {
+        $registration = \App\Models\EventRegistration::where('user_id', Auth::id())
+            ->findOrFail($registrationId);
+
+        $registration->delete();
+
+        return back()->with('success', 'Registration cancelled.');
+    }
 }
