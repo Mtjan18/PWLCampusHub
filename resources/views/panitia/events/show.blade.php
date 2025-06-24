@@ -9,7 +9,10 @@
         <div class="col-lg-5">
             <div class="card shadow border-0 mb-3 animate__fadeInUp">
                 <div class="event-poster position-relative">
-                    <img src="{{ $event->poster_url ?? asset('images/default-event.jpg') }}" class="card-img-top rounded-top event-image" alt="{{ $event->name }}" style="object-fit:cover; height:320px;">
+                    <img src="{{ $event->poster_url ? asset('storage/' . $event->poster_url) : asset('images/default-event.jpg') }}"
+                         alt="{{ $event->name }}"
+                         class="card-img-top rounded-top event-image"
+                         style="object-fit:cover; height:320px;">
                     <span class="badge position-absolute top-0 end-0 m-3 {{ $event->status == 1 ? 'bg-success' : 'bg-danger' }} animate__fadeInDown">
                         <i class="bi bi-{{ $event->status == 1 ? 'check-circle' : 'x-circle' }}"></i>
                         {{ $event->status == 1 ? 'Aktif' : 'Nonaktif' }}

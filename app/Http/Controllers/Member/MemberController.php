@@ -133,4 +133,39 @@ class MemberController extends Controller
 
         return back()->with('success', 'Registration cancelled.');
     }
+    public function registerMultipleSessions(Request $request, $eventId)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'session_ids' => 'required|array|min:1',
+            'session_ids.*' => 'exists:event_sessions,id',
+            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        $proofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
+
+        $registered = 0;
+        foreach ($request->session_ids as $sessionId) {
+            $exists = \App\Models\EventRegistration::where('user_id', $user->id)
+                ->where('session_id', $sessionId)
+                ->exists();
+
+            if (!$exists) {
+                \App\Models\EventRegistration::create([
+                    'user_id' => $user->id,
+                    'session_id' => $sessionId,
+                    'payment_proof_url' => $proofPath,
+                    'payment_status' => 0,
+                ]);
+                $registered++;
+            }
+        }
+
+        if ($registered > 0) {
+            return back()->with('success', 'Berhasil mendaftar pada ' . $registered . ' sesi! Tunggu verifikasi pembayaran.');
+        } else {
+            return back()->with('warning', 'Anda sudah terdaftar di semua sesi yang dipilih.');
+        }
+    }
 }

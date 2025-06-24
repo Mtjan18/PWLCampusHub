@@ -54,7 +54,7 @@ Route::middleware(['auth', Member::class])->prefix('member')->name('member.')->g
     Route::get('/payments', [MemberController::class, 'payments'])->name('payments');
     Route::get('/events/{event}', [MemberController::class, 'showEvent'])->name('events.show');
     Route::delete('/registrations/{registration}', [MemberController::class, 'cancelRegistration'])->name('registrations.cancel');
-    Route::post('/events/{event}/sessions/{session}/register', [MemberController::class, 'registerSession'])->name('sessions.register');
+    Route::post('/events/{event}/sessions/register', [MemberController::class, 'registerMultipleSessions'])->name('sessions.register');
 });
 
 // Route dashboard untuk PANITIA 

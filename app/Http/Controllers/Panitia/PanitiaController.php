@@ -88,10 +88,15 @@ class PanitiaController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'location' => 'required|string|max:255',
-            'poster_url' => 'nullable|url',
+            'poster_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'registration_fee' => 'nullable|numeric',
             'max_participants' => 'nullable|integer',
         ]);
+
+        $posterPath = null;
+        if ($request->hasFile('poster')) {
+        $posterPath = $request->file('poster')->store('posters', 'public');
+        }
 
         $event = Event::create([
             'name' => $request->name,
@@ -99,10 +104,11 @@ class PanitiaController extends Controller
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'location' => $request->location,
-            'poster_url' => $request->poster_url,
+            'poster_url' => $posterPath,
             'registration_fee' => $request->registration_fee ?? 0.00,
             'max_participants' => $request->max_participants ?? 0,
             'created_by' => Auth::id(),
+            'status' => $request->status ?? 1,
         ]);
 
         return redirect()->route('panitia.events.show', $event->id)

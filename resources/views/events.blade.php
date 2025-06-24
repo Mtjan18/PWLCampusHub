@@ -223,7 +223,10 @@
                 @else status-full @endif">
                 {{ $event->status == 1 ? 'Aktif' : 'Nonaktif' }}
               </div>
-              <img src="{{ $event->poster_url ?? asset('images/default-event.jpg') }}" class="card-img-top" alt="{{ $event->name }}" style="object-fit:cover; height:200px;">
+              <img src="{{ $event->poster_url ? asset('storage/' . $event->poster_url) : asset('images/default-event.jpg') }}"
+                   alt="{{ $event->name }}"
+                   class="card-img-top rounded-top event-image"
+                   style="object-fit:cover; height:320px;">
               <div class="card-body d-flex flex-column">
                 <div class="mb-2">
                   @if(!empty($event->category))
