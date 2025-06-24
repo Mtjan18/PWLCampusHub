@@ -69,4 +69,49 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', "{$user->name} berhasil diangkat menjadi {$newRoleName}.");
     }
+
+    public function removeCommittee(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        // Ensure user is a committee member
+        if ($user->role->name !== 'panitia') {
+            return redirect()->back()->with('error', 'User is not a committee member.');
+        }
+
+        // Change role back to member (assuming role_id 1 is for members)
+        $memberRoleId = Role::where('name', 'member')->first()->id;
+        $user->update([
+            'role_id' => $memberRoleId
+        ]);
+
+        return redirect()->route('admin.committee.index')->with('success', $user->name . ' has been removed from the committee team.');
+    }
+
+
+    public function removeFinance(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        // Pastikan user adalah tim keuangan
+        if ($user->role->name !== 'tim_keuangan') {
+            return redirect()->back()->with('error', 'User is not a finance team member.');
+        }
+
+        // Ubah role kembali ke member
+        $memberRoleId = Role::where('name', 'member')->first()->id;
+        $user->update([
+            'role_id' => $memberRoleId
+        ]);
+
+        return redirect()->route('admin.finance.index')->with('success', $user->name . ' has been removed from the finance team.');
+    }
 }

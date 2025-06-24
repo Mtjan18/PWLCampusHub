@@ -65,71 +65,114 @@
       </div>
       
       <div class="row g-4">
-        <!-- Event Card 1 -->
-        <div class="col-md-6 col-lg-4">
-          <div class="card event-card h-100">
-            <div class="event-image">
-              <img src="https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg" class="card-img-top" alt="Tech Conference">
-              <span class="event-category">Technology</span>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="event-date"><i class="bi bi-calendar3"></i> Jun 15, 2025</span>
-                <span class="event-time"><i class="bi bi-clock"></i> 10:00 AM</span>
+        @php
+          // Get upcoming events that are active
+          $featuredEvents = \App\Models\Event::where('status', 1)
+                         ->where('date', '>=', \Carbon\Carbon::today())
+                         ->orderBy('date')
+                         ->take(3)
+                         ->get();
+        @endphp
+
+        @forelse($featuredEvents as $event)
+          <div class="col-md-6 col-lg-4">
+            <div class="card event-card h-100">
+              <div class="event-image">
+                <img src="{{ $event->poster_url ? asset('storage/' . $event->poster_url) : 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg' }}" 
+                     class="card-img-top" alt="{{ $event->name }}" style="height: 200px; object-fit: cover;">
+                <span class="event-category">
+                  @if($event->sessions->count() > 0)
+                    {{ $event->sessions->count() }} Session(s)
+                  @else
+                    Event
+                  @endif
+                </span>
               </div>
-              <h5 class="card-title">AI in Education Conference</h5>
-              <p class="card-text">Explore the latest applications of artificial intelligence in modern education.</p>
-              <div class="d-flex justify-content-between align-items-center mt-3">
-                <span class="event-price">$25.00</span>
-                <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Event Card 2 -->
-        <div class="col-md-6 col-lg-4">
-          <div class="card event-card h-100">
-            <div class="event-image">
-              <img src="https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg" class="card-img-top" alt="Leadership Workshop">
-              <span class="event-category">Workshop</span>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="event-date"><i class="bi bi-calendar3"></i> Jul 10, 2025</span>
-                <span class="event-time"><i class="bi bi-clock"></i> 2:00 PM</span>
-              </div>
-              <h5 class="card-title">Leadership Development Workshop</h5>
-              <p class="card-text">Develop essential leadership skills with industry experts and interactive sessions.</p>
-              <div class="d-flex justify-content-between align-items-center mt-3">
-                <span class="event-price">$15.00</span>
-                <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Event Card 3 -->
-        <div class="col-md-6 col-lg-4">
-          <div class="card event-card h-100">
-            <div class="event-image">
-              <img src="https://images.pexels.com/photos/1708936/pexels-photo-1708936.jpeg" class="card-img-top" alt="Design Thinking">
-              <span class="event-category">Seminar</span>
-            </div>
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="event-date"><i class="bi bi-calendar3"></i> Aug 5, 2025</span>
-                <span class="event-time"><i class="bi bi-clock"></i> 9:30 AM</span>
-              </div>
-              <h5 class="card-title">Design Thinking in Research</h5>
-              <p class="card-text">Learn how to apply design thinking methodology to enhance your research projects.</p>
-              <div class="d-flex justify-content-between align-items-center mt-3">
-                <span class="event-price">Free</span>
-                <a href="event-details.html" class="btn btn-outline-primary">View Details</a>
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="event-date"><i class="bi bi-calendar3"></i> {{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}</span>
+                  <span class="event-time"><i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}</span>
+                </div>
+                <h5 class="card-title">{{ $event->name }}</h5>
+                <p class="card-text">{{ \Illuminate\Support\Str::limit($event->description ?? 'Join this exciting event at the university.', 80) }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="event-price">
+                    @if($event->registration_fee > 0)
+                      Rp{{ number_format($event->registration_fee,0,',','.') }}
+                    @else
+                      Free
+                    @endif
+                  </span>
+                  <a href="{{ route('events.show', $event->id) }}" class="btn btn-outline-primary">View Details</a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        @empty
+          <!-- Display placeholder cards if no events are available -->
+          <div class="col-md-6 col-lg-4">
+            <div class="card event-card h-100">
+              <div class="event-image">
+                <img src="https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg" class="card-img-top" alt="Tech Conference">
+                <span class="event-category">Technology</span>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="event-date"><i class="bi bi-calendar3"></i> Jun 15, 2025</span>
+                  <span class="event-time"><i class="bi bi-clock"></i> 10:00 AM</span>
+                </div>
+                <h5 class="card-title">AI in Education Conference</h5>
+                <p class="card-text">Explore the latest applications of artificial intelligence in modern education.</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="event-price">$25.00</span>
+                  <a href="{{ route('events') }}" class="btn btn-outline-primary">View Details</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-4">
+            <div class="card event-card h-100">
+              <div class="event-image">
+                <img src="https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg" class="card-img-top" alt="Leadership Workshop">
+                <span class="event-category">Workshop</span>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="event-date"><i class="bi bi-calendar3"></i> Jul 10, 2025</span>
+                  <span class="event-time"><i class="bi bi-clock"></i> 2:00 PM</span>
+                </div>
+                <h5 class="card-title">Leadership Development Workshop</h5>
+                <p class="card-text">Develop essential leadership skills with industry experts and interactive sessions.</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="event-price">$15.00</span>
+                  <a href="{{ route('events') }}" class="btn btn-outline-primary">View Details</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-4">
+            <div class="card event-card h-100">
+              <div class="event-image">
+                <img src="https://images.pexels.com/photos/1708936/pexels-photo-1708936.jpeg" class="card-img-top" alt="Design Thinking">
+                <span class="event-category">Seminar</span>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="event-date"><i class="bi bi-calendar3"></i> Aug 5, 2025</span>
+                  <span class="event-time"><i class="bi bi-clock"></i> 9:30 AM</span>
+                </div>
+                <h5 class="card-title">Design Thinking in Research</h5>
+                <p class="card-text">Learn how to apply design thinking methodology to enhance your research projects.</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="event-price">Free</span>
+                  <a href="{{ route('events') }}" class="btn btn-outline-primary">View Details</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        @endforelse
       </div>
       
       <div class="text-center mt-5">

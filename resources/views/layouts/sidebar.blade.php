@@ -64,7 +64,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('tim_keuangan.payments') }}">
+                    <a class="nav-link" href="{{ route('tim_keuangan.payments.index') }}">
                         <i class="bi bi-cash-coin"></i> <span>Payments</span>
                     </a>
                 </li>

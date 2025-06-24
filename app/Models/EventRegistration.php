@@ -15,7 +15,9 @@ class EventRegistration extends Model
         'payment_proof_url',
         'payment_status',
         'qr_code',
-        'registered_at'
+        'registered_at',
+        'rejection_reason',   // tambahkan ini
+        'rejection_notes'     // tambahkan ini
     ];
 
     public function session()

@@ -20,13 +20,11 @@ class PanitiaController extends Controller
 
         $events = Event::all();
 
-
         $eventCount = $events->count();
 
         $activeEvents = $events->filter(function ($event) {
             return $event->date >= now() && $event->status == 1;
         });
-
 
         $completedEvents = $events->filter(function ($event) {
             return $event->date < now();
@@ -35,35 +33,43 @@ class PanitiaController extends Controller
         $activeCount = $activeEvents->count();
         $completedCount = $completedEvents->count();
 
+        // Hanya registrasi yang sudah diverifikasi
         $registrationTotal = $events->sum(function ($event) {
-            return $event->registrations()->count();
+            return $event->registrations()->where('payment_status', 1)->count();
         });
 
         $weeklyRegistration = $events->sum(function ($event) {
             return $event->registrations()
-                ->whereBetween('event_registrations.created_at', [now()->startOfWeek(), now()->endOfWeek()])
+                ->where('payment_status', 1)
+                ->whereBetween('event_registrations.registered_at', [now()->startOfWeek(), now()->endOfWeek()])
                 ->count();
         });
 
-        $attendanceRate = 0;
+        // Perhitungan attendance rate yang benar:
         $totalAttendances = 0;
-        $totalRegistrations = 0;
+        $totalVerifiedRegistrations = 0;
 
         foreach ($events as $event) {
-            $registrations = $event->registrations()->count();
-            $attendances = $event->attendances()->count();
-            $totalRegistrations += $registrations;
-            $totalAttendances += $attendances;
+            // Ambil hanya registrasi yang sudah diverifikasi
+            $verifiedRegistrations = $event->registrations()->where('payment_status', 1)->get();
+            $totalVerifiedRegistrations += $verifiedRegistrations->count();
+
+            // Hitung kehadiran dari registrasi yang sudah diverifikasi
+            foreach ($verifiedRegistrations as $reg) {
+                $totalAttendances += $reg->attendances()->count();
+            }
         }
 
-        if ($totalRegistrations > 0) {
-            $attendanceRate = round(($totalAttendances / $totalRegistrations) * 100, 2);
+        $attendanceRate = 0;
+        if ($totalVerifiedRegistrations > 0) {
+            $attendanceRate = round(($totalAttendances / $totalVerifiedRegistrations) * 100, 2);
         }
 
-        $activeEventsDetailed = Event::withCount('registrations')
-            ->where('date', '>=', now())
-            ->get();
-
+        $activeEventsDetailed = Event::withCount(['registrations' => function($q) {
+            $q->where('payment_status', 1);
+        }])
+        ->where('date', '>=', now())
+        ->get();
 
         return view('panitia.dashboard', compact(
             'eventCount',

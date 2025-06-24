@@ -113,9 +113,11 @@
                                                     - {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }}</small>
                                             </td>
                                             <td>
-                                                <span
-                                                    class="{{ $event->registrations_count >= $event->max_participants ? 'text-danger fw-semibold' : '' }}">
-                                                    {{ $event->registrations_count }}/{{ $event->max_participants }}
+                                                @php
+                                                    $verifiedCount = $event->registrations()->where('payment_status', 1)->count();
+                                                @endphp
+                                                <span class="{{ $verifiedCount >= $event->max_participants ? 'text-danger fw-semibold' : '' }}">
+                                                    {{ $verifiedCount }}/{{ $event->max_participants }}
                                                 </span>
                                             </td>
                                             <td>

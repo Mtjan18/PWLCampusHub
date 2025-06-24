@@ -28,12 +28,12 @@ class MemberController extends Controller
         $today = \Carbon\Carbon::today();
 
         // Filter upcoming & history
-        $upcoming = $registrations->filter(function($reg) use ($today) {
+        $upcoming = $registrations->filter(function ($reg) use ($today) {
             return $reg->session && $reg->session->session_date >= $today
                 && $reg->attendances->where('session_id', $reg->session_id)->count() == 0;
         })->values();
 
-        $history = $registrations->filter(function($reg) use ($today) {
+        $history = $registrations->filter(function ($reg) use ($today) {
             return ($reg->session && $reg->session->session_date < $today)
                 || $reg->attendances->where('session_id', $reg->session_id)->count() > 0;
         })->values();
@@ -211,5 +211,25 @@ class MemberController extends Controller
         } else {
             return back()->with('warning', 'Anda sudah terdaftar di semua sesi yang dipilih.');
         }
+    }
+
+    public function downloadCertificate($certificateId)
+    {
+        $certificate = \App\Models\Certificate::findOrFail($certificateId);
+
+        // Verify the certificate belongs to the current user
+        if ($certificate->registration->user_id != Auth::id()) {
+            abort(403, 'Unauthorized access');
+        }
+
+        $path = storage_path('app/public/' . $certificate->certificate_url);
+
+        if (!file_exists($path)) {
+            abort(404, 'Certificate file not found');
+        }
+
+        // Get filename from path or use a default name
+        $filename = pathinfo($certificate->certificate_url, PATHINFO_BASENAME);
+        return response()->download($path, $filename);
     }
 }

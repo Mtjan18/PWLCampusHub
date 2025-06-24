@@ -15,7 +15,7 @@
                           <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('panitia.events.create') }}">Buat Event</a>
                       @elseif($role === 'tim_keuangan')
                           <a class="nav-link text-primary fw-semibold" href="{{ route('tim_keuangan.dashboard') }}">Dashboard</a>
-                          <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('tim_keuangan.payments') }}">Payments</a>
+                          <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('tim_keuangan.payments.index') }}">Payments</a>
                       @elseif($role === 'member')
                           <a class="nav-link text-primary fw-semibold" href="{{ route('member.dashboard') }}">Dashboard</a>
                           <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('events') }}">My Events</a>

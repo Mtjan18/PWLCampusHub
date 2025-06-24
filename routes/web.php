@@ -25,7 +25,6 @@ Route::get('/dashboard', function () {
 
 Route::get('/events', [App\Http\Controllers\Panitia\EventController::class, 'publicIndex'])->name('events');
 
-Route::get('/certificates/download/{certificate}', [Controller::class, 'download'])->name('certificate.download');
 
 // Route::middleware('auth')->group(function () {
 //     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -45,6 +44,9 @@ Route::middleware(['auth', Admin::class])->prefix('admin')->name('admin.')->grou
     Route::get('/members', [AdminController::class, 'members'])->name('members');
     Route::get('/events', [AdminController::class, 'events'])->name('events');
     Route::post('/members/promote', [AdminController::class, 'promote'])->name('members.promote');
+
+    Route::post('/admin/finance/remove', [AdminController::class, 'removeFinance'])->name('finance.remove');
+    Route::post('/admin/committee/remove', [AdminController::class, 'removeCommittee'])->name('committee.remove');
 });
 
 
@@ -57,6 +59,7 @@ Route::middleware(['auth', Member::class])->prefix('member')->name('member.')->g
     Route::get('/events/{event}', [MemberController::class, 'showEvent'])->name('events.show');
     Route::delete('/registrations/{registration}', [MemberController::class, 'cancelRegistration'])->name('registrations.cancel');
     Route::post('/events/{event}/sessions/register', [MemberController::class, 'registerMultipleSessions'])->name('sessions.register');
+    Route::get('/certificates/download/{certificate}', [MemberController::class, 'downloadCertificate'])->name('certificate.download');
 });
 
 // Route dashboard untuk PANITIA 
@@ -93,11 +96,11 @@ Route::middleware(['auth', Panitia::class])->prefix('panitia')->name('panitia.')
 // Route dashboard untuk TIM KEUANGAN
 Route::middleware(['auth', TimKeuangan::class])->prefix('tim-keuangan')->name('tim_keuangan.')->group(function () {
     Route::get('/dashboard', [TimKeuanganController::class, 'dashboard'])->name('dashboard');
-    Route::get('/payments', [TimKeuanganController::class, 'payments'])->name('payments');
-    Route::get('/payments/index', [TimKeuanganController::class, 'paymentsIndex'])->name('payments.index');
+    Route::get('/payments', [TimKeuanganController::class, 'paymentIndex'])->name('payments.index');
     Route::get('/payments/{registration}', [TimKeuanganController::class, 'showPayment'])->name('payments.show');
     Route::get('/payments/{registration}/verify', [TimKeuanganController::class, 'verifyPayment'])->name('payments.verify');
     Route::post('/payments/{registration}/refund', [TimKeuanganController::class, 'refundPayment'])->name('payments.refund');
+    Route::put('/payments/{registration}/reject', [TimKeuanganController::class, 'rejectPayment'])->name('payments.reject');
 });
 
 

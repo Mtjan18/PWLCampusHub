@@ -109,7 +109,11 @@
                                 <i class="bi bi-info-circle"></i> Event Detail
                             </a>
                             @if($reg->certificate)
-                                <a href="{{ $reg->certificate->certificate_url }}" class="btn btn-outline-success btn-sm" target="_blank">
+                                <a href="#" class="btn btn-outline-success btn-sm"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#certificateModal"
+                                   data-img="{{ asset('storage/' . $reg->certificate->certificate_url) }}"
+                                   data-type="{{ pathinfo($reg->certificate->certificate_url, PATHINFO_EXTENSION) }}">
                                     <i class="bi bi-award"></i> View Certificate
                                 </a>
                             @endif
@@ -164,4 +168,45 @@
     z-index: 1;
 }
 </style>
+@endsection
+
+<!-- Modal -->
+<div class="modal fade" id="certificateModal" tabindex="-1" aria-labelledby="certificateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="certificateModalLabel">Event Certificate</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="certificateImage" src="" alt="Certificate" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section('scripts')
+<script>
+    // Script to handle the certificate modal
+    const certificateModal = document.getElementById('certificateModal');
+    certificateModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const imgSrc = button.getAttribute('data-img');
+        const imgType = button.getAttribute('data-type');
+
+        const certificateImage = document.getElementById('certificateImage');
+        certificateImage.src = imgSrc;
+
+        // Optional: If you want to handle different types of certificates (e.g., PDF, image)
+        if (imgType === 'pdf') {
+            certificateImage.parentElement.innerHTML = `
+                <iframe src="${imgSrc}" width="100%" height="400px"></iframe>
+            `;
+        } else {
+            certificateImage.parentElement.innerHTML = `
+                <img src="${imgSrc}" alt="Certificate" class="img-fluid rounded">
+            `;
+        }
+    });
+</script>
 @endsection
