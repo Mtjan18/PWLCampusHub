@@ -8,6 +8,7 @@ use App\Models\Speaker;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Models\EventRegistration;
 
@@ -288,5 +289,70 @@ class PanitiaController extends Controller
 
         return redirect()->route('panitia.events.show', $event->id)
             ->with('success', 'Event berhasil diupdate.');
+    }
+
+
+    public function showUploadCertificates(Event $event, EventSession $session)
+    {
+        $attendedRegistrations = $session->registrations()
+            ->whereHas('attendances')
+            ->with(['user', 'certificate'])
+            ->get();
+
+        return view('panitia.certificates.upload', compact('event', 'session', 'attendedRegistrations'));
+    }
+
+    public function uploadCertificates(Request $request, Event $event)
+    {
+        foreach ($request->file('certificates', []) as $registrationId => $file) {
+            if ($file) {
+                $path = $file->store('certificates', 'public');
+                \App\Models\Certificate::updateOrCreate(
+                    ['registration_id' => $registrationId],
+                    [
+                        'certificate_url' => $path,
+                        'uploaded_at' => now(),
+                        'uploaded_by' => Auth::id(),
+                    ]
+                );
+            }
+        }
+        return back()->with('success', 'Sertifikat berhasil diupload.');
+    }
+
+
+    public function uploadCertificatesMassal(Request $request, Event $event)
+    {
+        $request->validate([
+            'zip_file' => 'required|file|mimes:zip',
+        ]);
+
+        $zip = new \ZipArchive;
+        if ($zip->open($request->file('zip_file')->getRealPath()) === TRUE) {
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                // Ambil registration_id dari nama file, misal: sertifikat_123.pdf
+                if (preg_match('/sertifikat_(\d+)\.(pdf|jpg|jpeg|png)$/i', $filename, $match)) {
+                    $registrationId = $match[1];
+                    $fileContent = $zip->getFromIndex($i);
+                    $ext = $match[2];
+                    $storagePath = "certificates/sertifikat_{$registrationId}." . $ext;
+                    \Storage::disk('public')->put($storagePath, $fileContent);
+
+                    \App\Models\Certificate::updateOrCreate(
+                        ['registration_id' => $registrationId],
+                        [
+                            'certificate_url' => $storagePath,
+                            'uploaded_at' => now(),
+                            'uploaded_by' => Auth::id(),
+                        ]
+                    );
+                }
+            }
+            $zip->close();
+            return back()->with('success', 'Sertifikat massal berhasil diupload.');
+        } else {
+            return back()->with('error', 'Gagal membuka file ZIP.');
+        }
     }
 }

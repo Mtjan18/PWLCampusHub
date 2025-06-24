@@ -53,21 +53,15 @@
                     @endif
                 </div>
                 <div class="text-center mt-3 mb-3">
-                    @if(auth()->user() && auth()->user()->role->name == 'panitia')
-                        <a href="{{ route('panitia.sessions.create', $event->id) }}" class="btn btn-outline-primary w-100 mb-2">
-                            <i class="bi bi-plus-circle"></i> Tambah Sesi
-                        </a>
-                        <a href="{{ route('panitia.events.edit', $event->id) }}" class="btn btn-warning w-100 mb-2">
-                            <i class="bi bi-pencil-square"></i> Edit Event
-                        </a>
-                        <a href="{{ route('panitia.dashboard') }}" class="btn btn-secondary w-100">
-                            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-                        </a>
-                    @elseif(auth()->user() && auth()->user()->role->name == 'member')
-                        <a href="{{ route('member.dashboard') }}" class="btn btn-secondary w-100">
-                            <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
-                        </a>
-                    @endif
+                    <a href="{{ route('panitia.sessions.create', $event->id) }}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="bi bi-plus-circle"></i> Tambah Sesi
+                    </a>
+                    <a href="{{ route('panitia.events.edit', $event->id) }}" class="btn btn-warning w-100 mb-2">
+                        <i class="bi bi-pencil-square"></i> Edit Event
+                    </a>
+                    <a href="{{ route('panitia.dashboard') }}" class="btn btn-secondary w-100">
+                        <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                    </a>
                 </div>
             </div>
         </div>
@@ -82,29 +76,33 @@
                     <div class="mb-4">
                         <h5 class="fw-semibold text-primary"><i class="bi bi-list-ol"></i> Daftar Sesi</h5>
                         @if($event->sessions && $event->sessions->count())
-                            <div class="timeline">
-                                @foreach($event->sessions as $session)
-                                    <div class="timeline-item mb-4">
-                                        <div class="d-flex align-items-center mb-1">
-                                            <span class="badge bg-primary me-2">{{ $loop->iteration }}</span>
-                                            <strong>{{ $session->name }}</strong>
-                                        </div>
-                                        <div class="mb-1">
+                            @foreach($event->sessions as $session)
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-body d-flex flex-column flex-md-row align-items-md-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ $session->name }}</h5>
+                                        <div class="mb-1 text-muted small">
                                             <i class="bi bi-calendar-event"></i> {{ \Carbon\Carbon::parse($session->session_date)->format('d M Y') }},
-                                            <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($session->end_time)->format('H:i') }} WIB,
+                                            <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }}-{{ \Carbon\Carbon::parse($session->end_time)->format('H:i') }},
                                             <i class="bi bi-geo-alt"></i> {{ $session->location }}
                                         </div>
-                                        @if($session->speakers && $session->speakers->count())
-                                            <div class="mb-1">
-                                                <i class="bi bi-mic"></i> Pembicara:
-                                                @foreach($session->speakers as $speaker)
-                                                    <span class="badge bg-secondary">{{ $speaker->name }}</span>
-                                                @endforeach
-                                            </div>
-                                        @endif
                                     </div>
-                                @endforeach
+                                    <div class="ms-md-3 mt-2 mt-md-0">
+                                        <form action="{{ route('panitia.certificates.upload', [$event->id, $session->id]) }}"
+                                              method="POST"
+                                              enctype="multipart/form-data"
+                                              class="d-inline">
+                                            @csrf
+                                            <input type="file" name="certificate_file" accept=".pdf,.jpg,.jpeg,.png" required
+                                                   class="form-control form-control-sm d-inline w-auto">
+                                            <button type="submit" class="btn btn-outline-info btn-sm">
+                                                <i class="bi bi-upload"></i> Upload Sertifikat Sesi Ini
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
+                            @endforeach
                         @else
                             <div class="alert alert-info mb-0">
                                 Belum ada sesi.

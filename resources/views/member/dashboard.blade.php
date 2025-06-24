@@ -118,7 +118,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($registrations->where('session.session_date', '>=', now()) as $registration)
+                                    @forelse(
+                                        $registrations
+                                            ->where('session.session_date', '>=', now())
+                                            ->filter(function($registration) {
+                                                // Hanya tampilkan jika BELUM absen di sesi ini
+                                                return $registration->attendances->where('session_id', $registration->session_id)->count() == 0;
+                                            })
+                                        as $registration)
                                     <tr>
                                         <td>
                                             <div class="fw-semibold">{{ $registration->session->event->name ?? '-' }}</div>
@@ -143,32 +150,18 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                                    type="button" id="dropdownMenuButton{{ $registration->id }}" data-bs-toggle="dropdown"
-                                                    aria-expanded="false">
-                                                    Actions
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $registration->id }}">
-                                                    <li><a class="dropdown-item" href="{{ route('events.show', $registration->session->event->id) }}">View Details</a></li>
-                                                    {{-- @if($registration->payment_status == 0)
-                                                        <li><a class="dropdown-item" href="{{ route('member.payments.upload', $registration->id) }}">Upload Payment</a></li>
-                                                    @endif --}}
-                                                    @if($registration->payment_status == 1 && $registration->qr_code)
-                                                        <li>
-                                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#qrModal{{ $registration->id }}">Show QR Code</a>
-                                                        </li>
-                                                    @endif
-                                                    <li>
-                                                        <form action="{{ route('member.registrations.cancel', $registration->id) }}" method="POST" onsubmit="return confirm('Cancel registration?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button class="dropdown-item text-danger" type="submit">Cancel Registration</button>
-                                                        </form>
-                                                    </li>
-                                                </ul>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <a class="btn btn-outline-primary btn-sm" href="{{ route('member.events.show', $registration->session->event->id) }}">View Details</a>
+                                                @if($registration->payment_status == 1 && $registration->qr_code)
+                                                    <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#qrModal{{ $registration->id }}">QR Code</button>
+                                                @endif
+                                                <form action="{{ route('member.registrations.cancel', $registration->id) }}" method="POST" onsubmit="return confirm('Cancel registration?')" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-outline-danger btn-sm" type="submit">Cancel</button>
+                                                </form>
                                             </div>
-                                            {{-- Modal QR Code --}}
+                                            {{-- Modal QR Code tetap di bawah --}}
                                             @if($registration->payment_status == 1 && $registration->qr_code)
                                             <div class="modal fade" id="qrModal{{ $registration->id }}" tabindex="-1" aria-labelledby="qrModalLabel{{ $registration->id }}" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
@@ -216,17 +209,18 @@
                         @forelse($certificates as $certificate)
                         <div class="certificate-item d-flex mb-3">
                             <div class="certificate-preview me-3">
-                                <img src="{{ asset('images/certificate.png') }}" alt="Certificate" width="80">
-                                <a href="{{ $certificate->certificate_url }}" class="certificate-download" download>
+                                <img src="{{ asset('storage/' . $certificate->certificate_url) }}" alt="Certificate" width="80">
+                                <a href="{{ asset('storage/' . $certificate->certificate_url) }}" class="certificate-download" download>
                                     <i class="bi bi-download"></i>
                                 </a>
                             </div>
                             <div class="certificate-details">
-                                <h6 class="mb-1">{{ $certificate->registration->event->name }}</h6>
+                                <h6 class="mb-1">{{ $certificate->registration?->session?->event?->name ?? '-' }}</h6>
+                                <div class="small text-muted">{{ $certificate->registration?->session?->name ?? '-' }}</div>
                                 <div class="text-muted small">Issued on: {{ \Carbon\Carbon::parse($certificate->uploaded_at)->format('F d, Y') }}</div>
                                 <div class="mt-2">
                                     <a href="{{ $certificate->certificate_url }}" class="btn btn-sm btn-outline-secondary" target="_blank">View</a>
-                                    <a href="#" class="btn btn-sm btn-outline-primary ms-1">Share</a>
+                                    {{-- <a href="#" class="btn btn-sm btn-outline-primary ms-1">Share</a> --}}
                                 </div>
                             </div>
                         </div>

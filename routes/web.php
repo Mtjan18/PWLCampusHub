@@ -12,6 +12,7 @@ use App\Http\Controllers\Panitia\PanitiaController;
 use App\Http\Controllers\Panitia\EventController;
 use App\Http\Controllers\Member\MemberController;
 use App\Http\Controllers\TimKeuangan\TimKeuanganController;
+use App\Http\Controllers\Controller;
 
 
 Route::get('/', function () {
@@ -24,6 +25,7 @@ Route::get('/dashboard', function () {
 
 Route::get('/events', [App\Http\Controllers\Panitia\EventController::class, 'publicIndex'])->name('events');
 
+Route::get('/certificates/download/{certificate}', [Controller::class, 'download'])->name('certificate.download');
 
 // Route::middleware('auth')->group(function () {
 //     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -80,6 +82,11 @@ Route::middleware(['auth', Panitia::class])->prefix('panitia')->name('panitia.')
 
     Route::get('/events/{event}/edit', [PanitiaController::class, 'editEvent'])->name('events.edit');
     Route::post('/events/{event}/update', [PanitiaController::class, 'updateEvent'])->name('events.update');
+
+
+    Route::get('/panitia/events/{event}/sessions/{session}/certificates/upload', [PanitiaController::class, 'showUploadCertificates'])->name('certificates.upload');
+    Route::post('/panitia/events/{event}/sessions/{session}/certificates/upload', [PanitiaController::class, 'uploadCertificates'])->name('certificates.upload');
+    Route::post('/panitia/events/{event}/sessions/{session}/certificates/upload-massal', [PanitiaController::class, 'uploadCertificatesMassal'])->name('certificates.uploadMassal');
 });
 
 

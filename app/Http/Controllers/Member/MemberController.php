@@ -15,10 +15,54 @@ class MemberController extends Controller
 {
 
 
-    public function events()
-    {
 
-        return view('member.events');
+    public function events(Request $request)
+    {
+        $user = auth()->user();
+
+        $registrations = $user->eventRegistrations()
+            ->with(['session.event', 'attendances', 'certificate'])
+            ->orderByDesc('id')
+            ->get();
+
+        $today = \Carbon\Carbon::today();
+
+        // Filter upcoming & history
+        $upcoming = $registrations->filter(function($reg) use ($today) {
+            return $reg->session && $reg->session->session_date >= $today
+                && $reg->attendances->where('session_id', $reg->session_id)->count() == 0;
+        })->values();
+
+        $history = $registrations->filter(function($reg) use ($today) {
+            return ($reg->session && $reg->session->session_date < $today)
+                || $reg->attendances->where('session_id', $reg->session_id)->count() > 0;
+        })->values();
+
+        // Manual pagination for collections
+        $perPage = 6; // bebas, misal 6 per halaman
+        $upcomingPage = $request->input('upcoming_page', 1);
+        $historyPage = $request->input('history_page', 1);
+
+        $upcomingPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $upcoming->forPage($upcomingPage, $perPage),
+            $upcoming->count(),
+            $perPage,
+            $upcomingPage,
+            ['pageName' => 'upcoming_page']
+        );
+
+        $historyPaginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $history->forPage($historyPage, $perPage),
+            $history->count(),
+            $perPage,
+            $historyPage,
+            ['pageName' => 'history_page']
+        );
+
+        return view('member.events', [
+            'upcomingRegistrations' => $upcomingPaginated,
+            'historyRegistrations' => $historyPaginated,
+        ]);
     }
 
     public function showEvent(\App\Models\Event $event)

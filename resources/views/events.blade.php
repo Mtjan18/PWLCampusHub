@@ -223,10 +223,15 @@
                 @else status-full @endif">
                 {{ $event->status == 1 ? 'Aktif' : 'Nonaktif' }}
               </div>
-              <img src="{{ $event->poster_url ? asset('storage/' . $event->poster_url) : asset('images/default-event.jpg') }}"
-                   alt="{{ $event->name }}"
-                   class="card-img-top rounded-top event-image"
-                   style="object-fit:cover; height:320px;">
+              <img
+                  src="{{ $event->poster_url ? asset('storage/' . $event->poster_url) : asset('images/default-event.jpg') }}"
+                  alt="{{ $event->name }}"
+                  class="card-img-top rounded-top event-image"
+                  style="object-fit:cover; height:180px; cursor:pointer;"
+                  data-bs-toggle="modal"
+                  data-bs-target="#eventImageModal"
+                  data-img="{{ $event->poster_url ? asset('storage/' . $event->poster_url) : asset('images/default-event.jpg') }}"
+              >
               <div class="card-body d-flex flex-column">
                 <div class="mb-2">
                   @if(!empty($event->category))
@@ -295,6 +300,17 @@
     </div>
   </section>
 
+  <!-- Modal untuk preview gambar event -->
+  <div class="modal fade" id="eventImageModal" tabindex="-1" aria-labelledby="eventImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-transparent border-0">
+        <div class="modal-body p-0 text-center">
+          <img id="modalEventImage" src="" alt="Event Poster" class="img-fluid rounded shadow" style="max-height:80vh;">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer text-white text-center py-3 mt-5">
     <div class="container">
@@ -303,5 +319,20 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('eventImageModal');
+    const modalImg = document.getElementById('modalEventImage');
+    document.querySelectorAll('.event-image[data-bs-toggle="modal"]').forEach(img => {
+        img.addEventListener('click', function() {
+            modalImg.src = this.getAttribute('data-img');
+        });
+    });
+    // Bersihkan src saat modal ditutup (opsional)
+    modal.addEventListener('hidden.bs.modal', function () {
+        modalImg.src = '';
+    });
+});
+</script>
 </body>
 </html>
