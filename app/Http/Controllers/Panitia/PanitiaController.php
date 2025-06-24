@@ -95,7 +95,7 @@ class PanitiaController extends Controller
 
         $posterPath = null;
         if ($request->hasFile('poster')) {
-        $posterPath = $request->file('poster')->store('posters', 'public');
+            $posterPath = $request->file('poster')->store('posters', 'public');
         }
 
         $event = Event::create([
@@ -138,6 +138,7 @@ class PanitiaController extends Controller
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'location' => $request->location,
+            'fee' => $request->fee,
         ]);
 
         if ($request->has('speakers')) {
@@ -175,6 +176,7 @@ class PanitiaController extends Controller
 
     public function scanAttendance(Request $request)
     {
+        // Ambil semua event & sesi untuk filter
         $events = \App\Models\Event::with('sessions')->orderBy('date')->get();
         $selectedEventId = $request->event_id ?? ($events->first()->id ?? null);
         $sessions = $selectedEventId
@@ -206,19 +208,29 @@ class PanitiaController extends Controller
         ]);
 
         // Dekripsi QR (isi: id registrasi)
-        try {
-            $registrationId = decrypt($request->qr_data);
-        } catch (\Exception $e) {
+
+        $data = json_decode($request->qr_data, true);
+        if (!$data || !isset($data['registration_id'], $data['event_id'], $data['session_id'])) {
             return response()->json(['status' => 'error', 'message' => 'QR tidak valid.']);
         }
 
-        $registration = EventRegistration::find($registrationId);
+        // Validasi session_id
+        if ($data['session_id'] != $request->session_id) {
+            return response()->json(['status' => 'error', 'message' => 'QR tidak sesuai dengan sesi yang dipilih.']);
+        }
+
+        $registration = \App\Models\EventRegistration::find($data['registration_id']);
+        if (!$registration) {
+            return response()->json(['status' => 'error', 'message' => 'Registrasi tidak ditemukan.']);
+        }
+
+
         if (!$registration) {
             return response()->json(['status' => 'error', 'message' => 'Registrasi tidak ditemukan.']);
         }
 
         // Cek sudah hadir atau belum
-        $already = Attendance::where('registration_id', $registrationId)
+        $already = \App\Models\Attendance::where('registration_id', $registration->id)
             ->where('session_id', $request->session_id)
             ->exists();
 
@@ -226,8 +238,8 @@ class PanitiaController extends Controller
             return response()->json(['status' => 'already', 'message' => 'Peserta sudah tercatat hadir.']);
         }
 
-        Attendance::create([
-            'registration_id' => $registrationId,
+        \App\Models\Attendance::create([
+            'registration_id' => $registration->id,
             'session_id' => $request->session_id,
             'scanned_by' => Auth::id(),
         ]);
@@ -235,7 +247,46 @@ class PanitiaController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Presensi berhasil!',
-            'registration_id' => $registrationId // <-- tambahkan ini
+            'registration_id' => $registration->id
         ]);
+    }
+
+    public function editEvent(Event $event)
+    {
+        return view('panitia.events.edit', compact('event'));
+    }
+
+    public function updateEvent(Request $request, Event $event)
+    {
+        $request->validate([
+            'name' => 'required|string|max:200',
+            'date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'location' => 'required|string|max:255',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'registration_fee' => 'nullable|numeric',
+            'max_participants' => 'nullable|integer',
+        ]);
+
+        $posterPath = $event->poster_url;
+        if ($request->hasFile('poster')) {
+            $posterPath = $request->file('poster')->store('posters', 'public');
+        }
+
+        $event->update([
+            'name' => $request->name,
+            'date' => $request->date,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'location' => $request->location,
+            'poster_url' => $posterPath,
+            'registration_fee' => $request->registration_fee ?? 0.00,
+            'max_participants' => $request->max_participants ?? 0,
+            'status' => $request->status ?? 1,
+        ]);
+
+        return redirect()->route('panitia.events.show', $event->id)
+            ->with('success', 'Event berhasil diupdate.');
     }
 }

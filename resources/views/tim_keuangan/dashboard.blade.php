@@ -93,7 +93,7 @@
                                         <td>{{ $reg->session->event->name ?? '-' }}</td>
                                         <td>{{ $reg->session->name ?? '-' }}</td>
                                         <td>{{ $reg->user->name ?? '-' }}</td>
-                                        <td>Rp{{ number_format($reg->session->event->registration_fee ?? 0,0,',','.') }}</td>
+                                        <td>Rp{{ number_format($reg->session->fee ?? 0,0,',','.') }}</td>
                                         <td>
                                             @if($reg->payment_status == 1)
                                                 <span class="badge bg-success">Verified</span>

@@ -16,6 +16,7 @@ class EventSession extends Model
         'name',
         'session_date',
         'location',
+        'fee',
         'start_time',
         'end_time',
     ];

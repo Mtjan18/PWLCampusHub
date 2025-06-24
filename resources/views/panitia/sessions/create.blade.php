@@ -47,6 +47,12 @@
             <input type="text" class="form-control" id="location" name="location" required>
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">Harga Sesi (Rp)</label>
+            <input type="number" class="form-control" id="fee" name="fee" min="0" step="1000" value="0" required>
+            <small class="text-muted">Isi 0 jika sesi gratis.</small>
+        </div>
+
         <hr>
         <h5>Speakers</h5>
 

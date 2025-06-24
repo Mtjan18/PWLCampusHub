@@ -4,85 +4,53 @@
           </button>
 
           <div class="navbar-nav ms-auto">
-              <!-- Tambahan link Dashboard dan Events -->
-              <div class="nav-item d-flex align-items-center me-3">
-                  <a class="nav-link text-primary fw-semibold" href="dashboard.html">Dashboard</a>
-                  <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('events') }}">Events</a>
-              </div>
-
-              <!-- Notifikasi -->
-              <div class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button"
-                      data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-bell"></i>
-                      <span class="badge bg-danger">3</span>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-end notification-dropdown"
-                      aria-labelledby="notificationsDropdown">
-                      <h6 class="dropdown-header">Notifications</h6>
-                      <a class="dropdown-item d-flex align-items-center" href="#">
-                          <div class="me-3">
-                              <div class="notification-icon bg-primary">
-                                  <i class="bi bi-calendar-check text-white"></i>
-                              </div>
-                          </div>
-                          <div>
-                              <div class="small text-gray-500">June 12, 2025</div>
-                              <span>Your registration for "AI in Education" has been confirmed!</span>
-                          </div>
-                      </a>
-                      <a class="dropdown-item d-flex align-items-center" href="#">
-                          <div class="me-3">
-                              <div class="notification-icon bg-success">
-                                  <i class="bi bi-cash-coin text-white"></i>
-                              </div>
-                          </div>
-                          <div>
-                              <div class="small text-gray-500">June 10, 2025</div>
-                              <span>Your payment for "Research Symposium" was received.</span>
-                          </div>
-                      </a>
-                      <a class="dropdown-item d-flex align-items-center" href="#">
-                          <div class="me-3">
-                              <div class="notification-icon bg-warning">
-                                  <i class="bi bi-award text-white"></i>
-                              </div>
-                          </div>
-                          <div>
-                              <div class="small text-gray-500">June 8, 2025</div>
-                              <span>New certificate available: "Leadership Workshop"</span>
-                          </div>
-                      </a>
-                      <a class="dropdown-item text-center small text-gray-500" href="#">Show All Notifications</a>
+              @auth
+                  @php $role = Auth::user()->role->name; @endphp
+                  <div class="nav-item d-flex align-items-center me-3">
+                      @if($role === 'admin')
+                          <a class="nav-link text-primary fw-semibold" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                          <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('admin.events') }}">Events</a>
+                      @elseif($role === 'panitia')
+                          <a class="nav-link text-primary fw-semibold" href="{{ route('panitia.dashboard') }}">Dashboard</a>
+                          <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('panitia.events.create') }}">Buat Event</a>
+                      @elseif($role === 'tim_keuangan')
+                          <a class="nav-link text-primary fw-semibold" href="{{ route('tim_keuangan.dashboard') }}">Dashboard</a>
+                          <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('tim_keuangan.payments') }}">Payments</a>
+                      @elseif($role === 'member')
+                          <a class="nav-link text-primary fw-semibold" href="{{ route('member.dashboard') }}">Dashboard</a>
+                          <a class="nav-link text-primary fw-semibold ms-3" href="{{ route('events') }}">My Events</a>
+                      @endif
                   </div>
-              </div>
-
-              <!-- User Profile -->
-              <div class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                      data-bs-toggle="dropdown" aria-expanded="false">
-                      <span class="d-none d-lg-inline text-gray-600 me-2">{{ Auth::user()->name }}</span>
-                      <img class="rounded-circle" src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg"
-                          alt="User Avatar" width="32" height="32">
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                      <a class="dropdown-item" href="#">
-                          <i class="bi bi-person me-2 text-gray-400"></i>
-                          Profile
+                  <!-- User Profile Dropdown -->
+                  <div class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                          data-bs-toggle="dropdown" aria-expanded="false">
+                          <span class="d-none d-lg-inline text-gray-600 me-2">{{ Auth::user()->name }}</span>
+                          <img class="rounded-circle" src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg"
+                              alt="User Avatar" width="32" height="32">
                       </a>
-                      <a class="dropdown-item" href="#">
-                          <i class="bi bi-gear me-2 text-gray-400"></i>
-                          Settings
-                      </a>
-                      <div class="dropdown-divider"></div>
-                      <form method="POST" action="{{ route('logout') }}">
-                          @csrf
-                          <button type="submit" class="dropdown-item">
-                              <i class="bi bi-box-arrow-right me-2 text-gray-400"></i>
-                              Logout
-                          </button>
-                      </form>
+                      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                          <a class="dropdown-item" href="#">
+                              <i class="bi bi-person me-2 text-gray-400"></i>
+                              Profile
+                          </a>
+                          <a class="dropdown-item" href="#">
+                              <i class="bi bi-gear me-2 text-gray-400"></i>
+                              Settings
+                          </a>
+                          <div class="dropdown-divider"></div>
+                          <form method="POST" action="{{ route('logout') }}">
+                              @csrf
+                              <button type="submit" class="dropdown-item">
+                                  <i class="bi bi-box-arrow-right me-2 text-gray-400"></i>
+                                  Logout
+                              </button>
+                          </form>
+                      </div>
                   </div>
-              </div>
+              @else
+                  <a href="{{ url('/login') }}" class="btn btn-outline-primary me-2">Login</a>
+                  <a href="{{ url('/register') }}" class="btn btn-primary">Register</a>
+              @endauth
           </div>
       </nav>

@@ -77,6 +77,9 @@ Route::middleware(['auth', Panitia::class])->prefix('panitia')->name('panitia.')
 
     Route::get('/attendance/scan', [PanitiaController::class, 'scanAttendance'])->name('attendance.scan');
     Route::post('/attendance/scan', [PanitiaController::class, 'storeAttendance'])->name('attendance.store');
+
+    Route::get('/events/{event}/edit', [PanitiaController::class, 'editEvent'])->name('events.edit');
+    Route::post('/events/{event}/update', [PanitiaController::class, 'updateEvent'])->name('events.update');
 });
 
 

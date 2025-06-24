@@ -15,9 +15,12 @@ class TimKeuanganController extends Controller
         $pendingPayments = EventRegistration::where('payment_status', 0)->count();
         $verifiedPayments = EventRegistration::where('payment_status', 1)->count();
         $refundPayments = EventRegistration::where('payment_status', 2)->count();
-        $totalRevenue = EventRegistration::where('payment_status', 1)->with('session.event')->get()->sum(function ($reg) {
-            return $reg->session->event->registration_fee ?? 0;
-        });
+        $totalRevenue = EventRegistration::where('payment_status', 1)
+            ->with('session')
+            ->get()
+            ->sum(function ($reg) {
+                return $reg->session->fee ?? 0;
+            });
 
         $recentPayments = EventRegistration::with(['user', 'session.event'])
             ->orderByDesc('registered_at')
@@ -47,7 +50,12 @@ class TimKeuanganController extends Controller
         $registration = \App\Models\EventRegistration::findOrFail($registrationId);
 
         // Generate data unik untuk QR (misal: id registrasi terenkripsi)
-        $qrData = encrypt($registration->id);
+        // Generate data QR dalam format JSON
+        $qrData = json_encode([
+            'registration_id' => $registration->id,
+            'event_id' => $registration->session->event_id,
+            'session_id' => $registration->session_id,
+        ]);
 
         // Generate QR code PNG
         $qrCodeImage = QrCode::format('png')->size(300)->generate($qrData);

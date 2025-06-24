@@ -57,6 +57,9 @@
                         <a href="{{ route('panitia.sessions.create', $event->id) }}" class="btn btn-outline-primary w-100 mb-2">
                             <i class="bi bi-plus-circle"></i> Tambah Sesi
                         </a>
+                        <a href="{{ route('panitia.events.edit', $event->id) }}" class="btn btn-warning w-100 mb-2">
+                            <i class="bi bi-pencil-square"></i> Edit Event
+                        </a>
                         <a href="{{ route('panitia.dashboard') }}" class="btn btn-secondary w-100">
                             <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
                         </a>

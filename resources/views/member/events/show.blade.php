@@ -69,8 +69,11 @@
                     <div class="mb-4">
                         <h5 class="fw-semibold">Daftar Sesi Event</h5>
                         @if ($event->sessions && $event->sessions->count())
-                            <form action="{{ route('member.sessions.register', $event->id) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('member.sessions.register', $event->id) }}" method="POST" enctype="multipart/form-data" id="sessionForm">
                                 @csrf
+                                <div id="total-fee" class="alert alert-info mb-3" style="display:none;">
+                                    Total yang harus dibayar: <strong>Rp<span id="fee-amount">0</span></strong>
+                                </div>
                                 <div class="timeline mb-3">
                                     @foreach ($event->sessions as $session)
                                         @php
@@ -90,6 +93,7 @@
                                                 {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }} -
                                                 {{ \Carbon\Carbon::parse($session->end_time)->format('H:i') }} WIB,
                                                 <i class="bi bi-geo-alt"></i> {{ $session->location }}
+                                                <span class="badge bg-warning text-dark ms-2">Rp{{ number_format($session->fee ?? 0,0,',','.') }}</span>
                                             </div>
                                             @if ($session->speakers && $session->speakers->count())
                                                 <div class="mb-1">
@@ -101,10 +105,11 @@
                                             @endif
                                             <div class="mt-2">
                                                 <div class="form-check">
-                                                    <input class="form-check-input"
+                                                    <input class="form-check-input session-checkbox"
                                                         type="checkbox"
                                                         name="session_ids[]"
                                                         value="{{ $session->id }}"
+                                                        data-fee="{{ $session->fee ?? 0 }}"
                                                         id="session_{{ $session->id }}"
                                                         {{ $alreadyRegistered ? 'checked disabled' : '' }}>
                                                     <label class="form-check-label" for="session_{{ $session->id }}">
@@ -166,4 +171,29 @@
         z-index: 1;
     }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.session-checkbox');
+        const totalFeeDiv = document.getElementById('total-fee');
+        const feeAmount = document.getElementById('fee-amount');
+
+        function updateTotalFee() {
+            let total = 0;
+            let checked = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked && !cb.disabled) {
+                    total += parseFloat(cb.dataset.fee);
+                    checked++;
+                }
+            });
+            feeAmount.textContent = total.toLocaleString('id-ID');
+            totalFeeDiv.style.display = checked > 0 ? 'block' : 'none';
+        }
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateTotalFee);
+        });
+        updateTotalFee();
+    });
+</script>
 @endsection

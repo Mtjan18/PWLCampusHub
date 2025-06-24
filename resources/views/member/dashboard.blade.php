@@ -151,9 +151,9 @@
                                                 </button>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $registration->id }}">
                                                     <li><a class="dropdown-item" href="{{ route('events.show', $registration->session->event->id) }}">View Details</a></li>
-                                                    @if($registration->payment_status == 0)
+                                                    {{-- @if($registration->payment_status == 0)
                                                         <li><a class="dropdown-item" href="{{ route('member.payments.upload', $registration->id) }}">Upload Payment</a></li>
-                                                    @endif
+                                                    @endif --}}
                                                     @if($registration->payment_status == 1 && $registration->qr_code)
                                                         <li>
                                                             <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#qrModal{{ $registration->id }}">Show QR Code</a>
@@ -260,7 +260,7 @@
                                     <tr>
                                         <td>{{ $registration->session->event->name ?? '-' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($registration->session->event->date)->format('F d, Y') }}</td>
-                                        <td>Rp{{ number_format($registration->session->event->registration_fee,0,',','.') }}</td>
+                                        <td>Rp{{ number_format($registration->session->fee ?? 0,0,',','.') }}</td>
                                         <td>
                                             @if($registration->payment_status == 1)
                                                 <span class="badge bg-success">Confirmed</span>
